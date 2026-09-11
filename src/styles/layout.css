@@ -92,6 +92,12 @@
     background: var(--color-line-strong);
     border-radius: 999px;
   }
+
+  .col-aside--content {
+    top: -340px;
+    max-height: calc(100vh + 340px);
+    padding-top: calc(3rem + 340px);
+  }
 }
 
 /* 본문 카드 */

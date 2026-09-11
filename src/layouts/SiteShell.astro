@@ -16,6 +16,7 @@ interface Props {
   headings?: Heading[];
   noindex?: boolean;
   ogType?: 'website' | 'article';
+  alignTocToContent?: boolean;
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   headings = [],
   noindex = false,
   ogType = 'website',
+  alignTocToContent = false,
 } = Astro.props;
 
 const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SITE.tagline}`;
@@ -112,7 +114,7 @@ const hasToc = headings.filter((h) => h.depth === 2 || h.depth === 3).length >= 
 
       {
         hasToc && (
-          <aside class="col-aside" aria-label="이 글의 목차">
+          <aside class:list={['col-aside', { 'col-aside--content': alignTocToContent }]} aria-label="이 글의 목차">
             <Toc headings={headings} variant="aside" />
           </aside>
         )

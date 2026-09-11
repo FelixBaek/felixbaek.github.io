@@ -26,9 +26,19 @@ const eyebrow = [
 ];
 ---
 
-<SiteShell title={data.title} description={data.description} headings={headings} ogType="article" noindex={data.noindex}>
-  <article class="article-card measure" itemscope itemtype="https://schema.org/BlogPosting" data-pagefind-body>
-    <header class="flex flex-col">
+<SiteShell
+  title={data.title}
+  description={data.description}
+  headings={headings}
+  ogType="article"
+  noindex={data.noindex}
+  alignTocToContent
+>
+  <article class="measure" itemscope itemtype="https://schema.org/BlogPosting" data-pagefind-body>
+    <header
+      class="flex min-h-[300px] flex-col justify-center bg-cover bg-center"
+      style={data.cover ? `background-image: url(${JSON.stringify(data.cover)})` : undefined}
+    >
       {
         eyebrow.length > 0 && (
           <p class="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem] font-semibold text-copper">
@@ -68,12 +78,14 @@ const eyebrow = [
       </ul>
     </header>
 
-    <Toc headings={headings} variant="inline" />
+    <div class="article-card mt-10">
+      <Toc headings={headings} variant="inline" />
 
-    <div class="prose mt-8" itemprop="articleBody">
-      <slot />
+      <div class="prose" itemprop="articleBody">
+        <slot />
+      </div>
+
+      <PostNav prev={prev} next={next} />
     </div>
-
-    <PostNav prev={prev} next={next} />
   </article>
 </SiteShell>
