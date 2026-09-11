@@ -13,11 +13,10 @@ interface Props {
   definition?: string;
   summary?: string;
   posts: Post[];
-  meta?: Array<{ label: string; value: string }>;
   emptyHint?: string;
 }
 
-const { title, eyebrow, definition, summary, posts, meta = [], emptyHint } = Astro.props;
+const { title, eyebrow, definition, summary, posts, emptyHint } = Astro.props;
 ---
 
 <SiteShell title={title} description={definition ?? summary ?? title}>
@@ -32,20 +31,6 @@ const { title, eyebrow, definition, summary, posts, meta = [], emptyHint } = Ast
     {definition && <p class="mt-3 text-[1.0625rem] leading-relaxed text-fg-muted">{definition}</p>}
     {summary && <p class="mt-2 text-[0.9375rem] leading-relaxed text-fg-muted">{summary}</p>}
 
-    {
-      meta.length > 0 && (
-        <dl class="mt-5 flex flex-wrap gap-x-6 gap-y-3 border-t border-line pt-4">
-          {meta.map((item) => (
-            <div class="flex flex-col gap-0.5">
-              <dt class="text-[0.6875rem] tracking-[0.04em] text-fg-caption">{item.label}</dt>
-              <dd class="text-[0.9375rem] font-semibold text-fg">{item.value}</dd>
-            </div>
-          ))}
-        </dl>
-      )
-    }
-
-    <p class="mt-5 text-[0.75rem] tracking-[0.04em] text-fg-caption">{posts.length}개 기록</p>
   </header>
 
   <section class="measure" data-pagefind-body>

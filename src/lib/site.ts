@@ -20,16 +20,6 @@ export async function getAllPosts(): Promise<Post[]> {
   return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
 
-/** 언어별 글 개수 — 좌측 패널 카운트 */
-export async function getLanguageCounts(): Promise<Record<string, number>> {
-  const posts = await getAllPosts();
-  const counts: Record<string, number> = {};
-  for (const post of posts) {
-    for (const term of post.data.languages) counts[term] = (counts[term] ?? 0) + 1;
-  }
-  return counts;
-}
-
 export async function getPostsByLanguage(term: string): Promise<Post[]> {
   const posts = await getAllPosts();
   const target = term.toLowerCase();

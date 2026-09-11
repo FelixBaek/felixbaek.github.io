@@ -4,14 +4,11 @@
  * Identity → Languages
  */
 import { getCollection } from 'astro:content';
-import { SITE, getLanguageCounts } from '@lib/site';
+import { SITE } from '@lib/site';
 
 const languages = await getCollection('languages');
-const languageCounts = await getLanguageCounts();
 const sortedLanguages = languages.sort((a, b) => a.data.order - b.data.order);
 const hasLanguages = sortedLanguages.length > 0;
-
-const count = (name: string): number => languageCounts[name] ?? 0;
 ---
 
 <div class="side-inner">
@@ -56,20 +53,16 @@ const count = (name: string): number => languageCounts[name] ?? 0;
           <span class="sidebar-folder__chevron text-[0.75rem] leading-none text-fg-caption" aria-hidden="true">›</span>
         </summary>
         <ul class="mt-2 flex flex-col gap-0.5">
-          {sortedLanguages.map((entry) => {
-            const c = count(entry.id);
-            return (
-              <li>
-                <a
-                  href={`/languages/${entry.id}/`}
-                  class="group flex items-baseline justify-between gap-2 rounded-md py-1.5 pr-2 pl-4 text-[0.875rem] text-fg hover:bg-surface-2 hover:text-copper"
-                >
-                  <span class="min-w-0 truncate">{entry.data.name}</span>
-                  <span class="flex-none text-[0.6875rem] tabular-nums text-fg-caption">{c}</span>
-                </a>
-              </li>
-            );
-          })}
+          {sortedLanguages.map((entry) => (
+            <li>
+              <a
+                href={`/languages/${entry.id}/`}
+                class="block truncate rounded-md py-1.5 pr-2 pl-4 text-[0.875rem] text-fg hover:bg-surface-2 hover:text-copper"
+              >
+                {entry.data.name}
+              </a>
+            </li>
+          ))}
         </ul>
       </details>
     ) : (

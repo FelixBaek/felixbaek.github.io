@@ -10,8 +10,6 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const posts = await getPostsByLanguage(entry.id);
-
-const meta = [{ label: '기록', value: `${posts.length}개` }];
 ---
 
 <AxisPage
@@ -20,6 +18,5 @@ const meta = [{ label: '기록', value: `${posts.length}개` }];
   definition={entry.data.summary}
   summary={entry.body}
   posts={posts}
-  meta={meta}
   emptyHint="아직 공부 중이에요."
 />
