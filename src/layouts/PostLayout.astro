@@ -1,7 +1,7 @@
 ---
 /**
  * 글 상세 (MDX Post)
- * 언어 → 제목 → 설명 → 메타 → [모바일 목차] → 본문 → 태그 → 하단 이동
+ * 언어 → 제목 → 설명 → 메타 → [모바일 목차] → 본문 → 태그 → 댓글 → 하단 이동
  */
 import SiteShell from '@layouts/SiteShell.astro';
 import Toc from '@components/toc/Toc.astro';
@@ -86,6 +86,29 @@ const eyebrow = [
           </ul>
         )
       }
+
+      <section class="mt-10 border-t border-line pt-8" aria-labelledby="comments-title">
+        <h2 id="comments-title" class="text-[1.25rem] font-bold tracking-[-0.01em] text-fg">댓글</h2>
+        <p class="mt-1 text-[0.8125rem] text-fg-muted">GitHub 계정으로 댓글을 남길 수 있습니다.</p>
+        <script
+          is:inline
+          src="https://giscus.app/client.js"
+          data-repo="FelixBaek/felixbaek.github.io"
+          data-repo-id="R_kgDOUVV19g"
+          data-category="General"
+          data-category-id="DIC_kwDOUVV19s4DFZBK"
+          data-mapping="pathname"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="top"
+          data-theme="preferred_color_scheme"
+          data-lang="ko"
+          data-loading="lazy"
+          crossorigin="anonymous"
+          async
+        ></script>
+      </section>
 
       <PostNav prev={prev} next={next} />
     </div>

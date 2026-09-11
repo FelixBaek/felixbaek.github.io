@@ -14,13 +14,32 @@ function systemTheme(): 'light' | 'dark' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
+function syncCommentsTheme(theme = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'): void {
+  document.querySelector<HTMLIFrameElement>('iframe.giscus-frame')?.contentWindow?.postMessage(
+    { giscus: { setConfig: { theme } } },
+    'https://giscus.app',
+  );
+}
+
 function applyTheme(pref: ThemePref): void {
   const theme = pref === 'auto' ? systemTheme() : pref;
   root.setAttribute('data-theme', theme);
   root.setAttribute('data-theme-pref', pref);
+  syncCommentsTheme(theme);
   for (const el of document.querySelectorAll<HTMLElement>('[data-theme-label]')) {
     el.textContent = pref === 'auto' ? '시스템' : pref === 'dark' ? '다크' : '라이트';
   }
+}
+
+function initCommentsTheme(): void {
+  const observer = new MutationObserver(() => {
+    const frame = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+    if (!frame) return;
+    frame.addEventListener('load', () => syncCommentsTheme(), { once: true });
+    syncCommentsTheme();
+    observer.disconnect();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
 function currentPref(): ThemePref {
@@ -225,6 +244,7 @@ function boot(): void {
   initCodeCopy();
   initReading();
   initTocInline();
+  initCommentsTheme();
 
   document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((button) => {
     button.addEventListener('click', (event) => {
