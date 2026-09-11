@@ -55,14 +55,14 @@ const count = (name: string): number => languageCounts[name] ?? 0;
           <span class="text-[0.6875rem] font-bold tracking-[0.1em] text-fg-caption uppercase">Languages</span>
           <span class="sidebar-folder__chevron text-[0.75rem] leading-none text-fg-caption" aria-hidden="true">›</span>
         </summary>
-        <ul class="sidebar-tree mt-2 flex flex-col gap-0.5">
+        <ul class="mt-2 flex flex-col gap-0.5">
           {sortedLanguages.map((entry) => {
             const c = count(entry.id);
             return (
               <li>
                 <a
                   href={`/languages/${entry.id}/`}
-                  class="sidebar-tree__item group flex items-baseline justify-between gap-2 rounded-r-md py-1.5 pr-2 pl-3 text-[0.875rem] text-fg hover:bg-surface-2 hover:text-copper"
+                  class="group flex items-baseline justify-between gap-2 rounded-md py-1.5 pr-2 pl-4 text-[0.875rem] text-fg hover:bg-surface-2 hover:text-copper"
                 >
                   <span class="min-w-0 truncate">{entry.data.name}</span>
                   <span class="flex-none text-[0.6875rem] tabular-nums text-fg-caption">{c}</span>

@@ -194,16 +194,4 @@
   .sidebar-folder__chevron { transition: transform 0.14s ease; }
   .sidebar-folder[open] .sidebar-folder__chevron { transform: rotate(90deg); }
 
-  .sidebar-tree {
-    margin-left: 3px;
-  }
-  .sidebar-tree__item { position: relative; }
-  .sidebar-tree__item::before {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 0.55rem;
-    border-top: 1px solid var(--color-copper);
-    content: '';
-  }
 }
