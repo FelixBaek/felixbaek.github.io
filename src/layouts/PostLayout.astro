@@ -1,7 +1,7 @@
 ---
 /**
  * 글 상세 (MDX Post)
- * 언어 → 제목 → 설명 → 메타 → 태그 → [모바일 목차] → 본문(MDX + Wasm Lab) → 하단 이동
+ * 언어 → 제목 → 설명 → 메타 → [모바일 목차] → 본문 → 태그 → 하단 이동
  */
 import SiteShell from '@layouts/SiteShell.astro';
 import Toc from '@components/toc/Toc.astro';
@@ -66,16 +66,6 @@ const eyebrow = [
       )}
 
       <PostMeta post={post} />
-
-      <ul class="mt-4 flex flex-wrap gap-2">
-        {
-          data.tags.map((tag) => (
-            <li>
-              <TagChip label={tag} href={`/tags/${slugifyTag(tag)}/`} tone="plain" />
-            </li>
-          ))
-        }
-      </ul>
     </header>
 
     <div class="article-card mt-10">
@@ -84,6 +74,18 @@ const eyebrow = [
       <div class="prose" itemprop="articleBody">
         <slot />
       </div>
+
+      {
+        data.tags.length > 0 && (
+          <ul class="mt-10 flex flex-wrap gap-2" aria-label="태그">
+            {data.tags.map((tag) => (
+              <li>
+                <TagChip label={tag} href={`/tags/${slugifyTag(tag)}/`} tone="plain" />
+              </li>
+            ))}
+          </ul>
+        )
+      }
 
       <PostNav prev={prev} next={next} />
     </div>
