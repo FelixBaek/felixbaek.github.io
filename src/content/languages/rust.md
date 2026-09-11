@@ -1,10 +1,7 @@
 ---
 name: "Rust"
-status: "learning"
 order: 20
-since: "2026-09"
 summary: "소유권·빌림·수명을 컴파일러 에러 메시지로 익히는 중입니다."
-repo: "https://github.com/FelixBaek"
 ---
 
 Rust는 "컴파일러가 화내니까" 외우는 대신, **어떤 에러가 나오는지**를 기록해 두는 쪽이 빨랐습니다.

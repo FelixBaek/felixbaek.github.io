@@ -42,18 +42,14 @@ title: "Go 슬라이스: len, cap"
 description: "목록·검색·OG에 쓰이는 한 줄 요약"
 date: 2026-09-10T23:10:00+09:00
 languages: ["go"]        # 좌측 Languages 축 (id)
-harness: ["concept"]     # 좌측 Harness 축 (id)
-projects: []             # 좌측 Projects 축 (id)
 tags: ["slice", "배열"]
-review: true             # 좌측 '복습 대기'에 노출
-reviewAfter: 2026-10-01T00:00:00+09:00  # 선택
+draft: true              # 작성 중이면 비공개
 wasm: ["slice_capacity"] # 임베드한 Wasm 모듈 이름
 ---
 ```
 
-축(id) 정의는 `src/content/languages/*.md`, `src/content/harness/*.md`,
-`src/content/projects/*.md` 입니다. 글이 없어도 축 페이지는 만들어지고,
-좌측 패널에는 `예정`/`0` 으로 표시됩니다.
+언어 id는 `src/content/languages/*.md`의 파일명과 맞춥니다. 글이 없는 언어도
+사이드바에 표시되며, 언어 페이지에는 `아직 공부 중이에요.`라고 안내합니다.
 
 ### 코드 블록 메타
 
@@ -90,19 +86,19 @@ import WasmLabFrame from '@components/wasm/WasmLabFrame.astro';
 ```
 src/
 ├─ components/
-│  ├─ nav/    Sidebar, SidebarAxis         좌측 기록 패널 (Languages·Harness·Projects)
+│  ├─ nav/    Sidebar, SidebarAxis         좌측 기록 패널
 │  ├─ toc/    Toc, ReadingRail            우측 목차 / 모바일 진행선
-│  ├─ post/   PostCard, PostMeta, SeriesCard, PostNav, TagChip
-│  ├─ page/   AxisPage                     축 아카이브 공용 레이아웃
+│  ├─ post/   PostCard, PostMeta, PostNav, TagChip
+│  ├─ page/   AxisPage                     언어 아카이브 공용 레이아웃
 │  └─ wasm/   WasmLabFrame, SliceLab, RuneLab, lab-utils
 ├─ layouts/   SiteShell(3단 골격), PostLayout
 ├─ lib/       site.ts (콘텐츠 조회·집계·포맷)
 ├─ plugins/   shiki-meta.ts
 ├─ scripts/   site.ts (테마·드로어·복사·스크롤 추적)
 ├─ styles/    tokens.css, layout.css, prose.css, code.css, lab.css, shiki-*.json
-├─ content/   posts(MDX) · languages · harness · projects
-├─ pages/     index, posts/[...slug], languages/[slug], harness/[slug], projects/[slug],
-│             tags/[slug], archives, search, about, 404, rss.xml
+├─ content/   posts(MDX) · languages
+├─ pages/     index, posts/[...slug], languages/[slug], tags/[slug], archives,
+│             search, about, 404, rss.xml
 └─ wasm/      slice_capacity(Rust) · rune-counter(Go)
 ```
 

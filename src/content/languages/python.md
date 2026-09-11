@@ -1,6 +1,5 @@
 ---
 name: "Python"
-status: "archived"
 order: 30
 summary: "오래 써서 손에 익은 언어입니다. 지금은 도구·스크립트 용도로만 씁니다."
 ---

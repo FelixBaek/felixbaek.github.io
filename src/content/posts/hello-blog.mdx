@@ -4,10 +4,7 @@ description: "학습 기록을 남기는 개인 기록장을 열었습니다. �
 date: 2026-09-10T20:00:00+09:00
 lastmod: 2026-09-10T20:00:00+09:00
 languages: []
-harness: ["retrospective"]
-projects: []
 tags: ["기록", "회고"]
-review: false
 wasm: []
 ---
 
@@ -31,21 +28,19 @@ wasm: []
 | 무엇을 알았나 | 근거와 예제가 있는 결론 |
 | 다시 볼 것 | 다음에 또 헷갈릴 부분 |
 
-## 복습을 강제하는 장치
+## 글 파일 만들기
 
-읽고 잊는 블로그가 되지 않으려고, 글을 쓰고 나서 front matter에 `review: true` 를 답니다.
+새 글은 제목과 언어, 태그를 지정해 만듭니다.
 
 ```yaml title="src/content/posts/example.mdx" hl={7} numbers
 ---
 title: "글 제목"
 date: 2026-09-10T21:00:00+09:00
 languages: ["go"]
-harness: ["concept"]
 tags: ["슬라이스"]
-review: true        # ← 좌측 '복습 대기'에 남는다
 ---
 ```
 
-좌측 패널의 **복습 대기** 블록에 남아 있다가, 한 번 더 확인한 뒤 지웁니다. 지연된 항목은 빨간색으로 표시됩니다.
+작성 중인 글은 `draft: true`로 두고, 확인을 마치면 값을 제거하거나 `false`로 바꿉니다.
 
 > 처음부터 잘 쓰려고 하지 않기로 했습니다. 다듬는 대신 계속 쌓는 쪽을 택했습니다.

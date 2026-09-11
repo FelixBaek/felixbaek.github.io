@@ -1,45 +1,18 @@
 ---
 /**
  * 좌측 기록 패널
- * 축 순서: Identity → Languages → Harness → Projects → Review Queue → 최근 기록
- * 모든 블록은 "축 + 개수 + 최근성"의 동일 문법을 따른다.
+ * Identity → Languages → 최근 기록
  */
 import { getCollection } from 'astro:content';
-import {
-  SITE,
-  formatRelative,
-  getAxisCounts,
-  getAxisLastUpdated,
-  getRecentPosts,
-  getReviewQueue,
-  isDue,
-} from '@lib/site';
+import { SITE, getLanguageCounts, getRecentPosts } from '@lib/site';
 import SidebarAxis from './SidebarAxis.astro';
 
-const [languages, harnesses, projects] = await Promise.all([
-  getCollection('languages'),
-  getCollection('harness'),
-  getCollection('projects'),
-]);
-
-const axisCounts = await getAxisCounts();
-const langUpdated = await getAxisLastUpdated('languages');
-const harnessUpdated = await getAxisLastUpdated('harness');
-const [reviewQueue, recentPosts] = await Promise.all([getReviewQueue(), getRecentPosts(4)]);
-
+const languages = await getCollection('languages');
+const languageCounts = await getLanguageCounts();
+const recentPosts = await getRecentPosts(4);
 const sortedLanguages = languages.sort((a, b) => a.data.order - b.data.order);
-const sortedHarness = harnesses.sort((a, b) => a.data.order - b.data.order);
-const sortedProjects = projects.sort((a, b) => a.data.order - b.data.order);
 
-const statusLabel: Record<string, string> = {
-  learning: '배우는 중',
-  active: '쓰는 중',
-  archived: '정리됨',
-  paused: '멈춤',
-  planned: '예정',
-};
-
-const count = (axis: string, name: string): number => axisCounts[`${axis}:${name}`] ?? 0;
+const count = (name: string): number => languageCounts[name] ?? 0;
 ---
 
 <div class="side-inner">
@@ -75,11 +48,16 @@ const count = (axis: string, name: string): number => axisCounts[`${axis}:${name
   </header>
 
   <!-- Languages -->
-  <SidebarAxis label="Languages" hint="언어별 학습 아카이브" tone="lang">
-    <ul class="flex flex-col gap-0.5">
+  <details class="sidebar-folder" open>
+    <summary class="flex cursor-pointer items-center gap-2 border-b border-line pb-1.5">
+      <span class="axis-dot axis-dot--lang"></span>
+      <span class="text-[0.6875rem] font-bold tracking-[0.1em] text-fg-caption uppercase">Languages</span>
+      <span class="sidebar-folder__chevron ml-auto text-fg-caption" aria-hidden="true">›</span>
+    </summary>
+    <p class="mt-1 pl-3.5 text-[0.6875rem] text-fg-caption">언어별 학습 아카이브</p>
+    <ul class="mt-2 flex flex-col gap-0.5">
       {sortedLanguages.map((entry) => {
-        const c = count('languages', entry.id);
-        const updated = langUpdated[entry.id];
+        const c = count(entry.id);
         return (
           <li>
             <a
@@ -90,135 +68,16 @@ const count = (axis: string, name: string): number => axisCounts[`${axis}:${name
                 <span class="axis-dot axis-dot--lang"></span>
                 <span class="truncate">{entry.data.name}</span>
               </span>
-              <span class="flex flex-none items-baseline gap-2">
-                {updated && <span class="text-[0.6875rem] text-fg-caption">{formatRelative(updated)}</span>}
-                <span
-                  class:list={[
-                    'text-[0.6875rem] tabular-nums',
-                    c === 0 ? 'text-fg-caption' : 'text-fg-muted',
-                  ]}
-                >
-                  {c === 0 ? statusLabel[entry.data.status] ?? '예정' : c}
-                </span>
-              </span>
+              <span class="flex-none text-[0.6875rem] tabular-nums text-fg-caption">{c}</span>
             </a>
           </li>
         );
       })}
     </ul>
-  </SidebarAxis>
-
-  <!-- Harness -->
-  <SidebarAxis label="Harness" hint="기록의 방식 (실험대)" tone="harness">
-    <ul class="flex flex-col gap-0.5">
-      {sortedHarness.map((entry) => {
-        const c = count('harness', entry.id);
-        const updated = harnessUpdated[entry.id];
-        return (
-          <li>
-            <a
-              href={`/harness/${entry.id}/`}
-              title={entry.data.definition}
-              class="group flex items-baseline justify-between gap-2 rounded-md px-2 py-1.5 text-[0.875rem] text-fg hover:bg-surface-2 hover:text-copper"
-            >
-              <span class="flex min-w-0 items-center gap-2">
-                <span class="axis-dot axis-dot--harness"></span>
-                <span class="truncate">{entry.data.name}</span>
-              </span>
-              <span class="flex flex-none items-baseline gap-2">
-                {updated && <span class="text-[0.6875rem] text-fg-caption">{formatRelative(updated)}</span>}
-                <span class="text-[0.6875rem] tabular-nums text-fg-muted">{c}</span>
-              </span>
-            </a>
-          </li>
-        );
-      })}
-    </ul>
-  </SidebarAxis>
-
-  <!-- Projects -->
-  <SidebarAxis label="Projects" hint="만든 것 아카이브" tone="project">
-    {
-      sortedProjects.length > 0 ? (
-        <ul class="flex flex-col gap-1.5">
-          {sortedProjects.map((entry) => {
-            const c = count('projects', entry.id);
-            const active = entry.data.status === 'active';
-            return (
-              <li>
-                <a
-                  href={`/projects/${entry.id}/`}
-                  class="block rounded-md px-2 py-1.5 hover:bg-surface-2"
-                >
-                  <span class="flex items-baseline justify-between gap-2">
-                    <span class="flex min-w-0 items-center gap-2 text-[0.875rem] text-fg">
-                      <span class="axis-dot axis-dot--project"></span>
-                      <span class="truncate">{entry.data.name}</span>
-                    </span>
-                    <span
-                      class:list={[
-                        'flex-none text-[0.6875rem]',
-                        active ? 'text-petrol' : 'text-fg-caption',
-                      ]}
-                    >
-                      {statusLabel[entry.data.status] ?? entry.data.status}
-                    </span>
-                  </span>
-                  {entry.data.stack.length > 0 && (
-                    <span class="mt-1 ml-4 flex flex-wrap gap-1">
-                      {entry.data.stack.slice(0, 4).map((tech) => (
-                        <span class="chip !py-0 !text-[0.625rem]">{tech}</span>
-                      ))}
-                      {c > 0 && <span class="chip !py-0 !text-[0.625rem]">글 {c}</span>}
-                    </span>
-                  )}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p class="rounded-lg border border-dashed border-line-strong px-3 py-2.5 text-[0.75rem] leading-relaxed text-fg-caption">
-          아직 정리 전입니다. 프로젝트 글을 쓰면 이 자리에 쌓입니다.
-        </p>
-      )
-    }
-  </SidebarAxis>
-
-  <!-- Review Queue -->
-  {
-    reviewQueue.length > 0 && (
-      <SidebarAxis label="복습 대기" hint={`다시 볼 기록 ${reviewQueue.length}개`} tone="lang">
-        <ul class="flex flex-col gap-1">
-          {reviewQueue.slice(0, 4).map((post) => (
-            <li>
-              <a
-                href={`/posts/${post.id}/`}
-                class="block rounded-md px-2 py-1 text-[0.8125rem] leading-snug text-fg-muted hover:bg-surface-2 hover:text-copper"
-              >
-                <span class="flex items-baseline justify-between gap-2">
-                  <span class="min-w-0 truncate">{post.data.title}</span>
-                  {post.data.reviewAfter && (
-                    <span
-                      class:list={[
-                        'flex-none text-[0.625rem]',
-                        isDue(post.data.reviewAfter) ? 'text-danger' : 'text-fg-caption',
-                      ]}
-                    >
-                      {isDue(post.data.reviewAfter) ? '지연' : '예정'}
-                    </span>
-                  )}
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </SidebarAxis>
-    )
-  }
+  </details>
 
   <!-- 최근 기록 -->
-  <SidebarAxis label="최근 기록" tone="project">
+  <SidebarAxis label="최근 기록">
     <ul class="flex flex-col gap-1">
       {
         recentPosts.map((post) => (

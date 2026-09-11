@@ -2,7 +2,7 @@
 interface Props {
   label: string;
   href?: string;
-  tone?: 'lang' | 'harness' | 'project' | 'plain';
+  tone?: 'lang' | 'plain';
   count?: number;
 }
 
@@ -10,11 +10,7 @@ const { label, href, tone = 'plain', count } = Astro.props;
 const toneClass =
   tone === 'lang'
     ? 'chip chip--lang'
-    : tone === 'harness'
-      ? 'chip chip--harness'
-      : tone === 'project'
-        ? 'chip chip--project'
-        : 'chip';
+    : 'chip';
 ---
 
 {

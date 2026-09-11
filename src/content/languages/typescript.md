@@ -1,6 +1,5 @@
 ---
 name: "TypeScript"
-status: "active"
 order: 40
 summary: "빌드 도구와 타입 시스템을 함께 보는 중입니다. Astro/Next 같은 도구 설정이 주요 주제."
 ---

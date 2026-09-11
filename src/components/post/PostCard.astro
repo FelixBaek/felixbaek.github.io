@@ -2,7 +2,7 @@
 /**
  * 목록용 글 카드: 메타 → 제목 → 요약 → 태그
  */
-import { axisLabel, formatDate, getAxisMaps, readingTime, slugifyTag, type Post } from '@lib/site';
+import { formatDate, getLanguageNames, languageLabel, readingTime, slugifyTag, type Post } from '@lib/site';
 import TagChip from './TagChip.astro';
 
 interface Props {
@@ -11,9 +11,9 @@ interface Props {
 
 const { post } = Astro.props;
 const { data } = post;
-const maps = await getAxisMaps();
+const languageNames = await getLanguageNames();
 const minutes = readingTime(post.body ?? '');
-const languageLabels = data.languages.map((id) => axisLabel(maps, 'languages', id));
+const languageLabels = data.languages.map((id) => languageLabel(languageNames, id));
 ---
 
 <article class="border-b border-line py-5 first:pt-0 last:border-b-0">
@@ -47,16 +47,9 @@ const languageLabels = data.languages.map((id) => axisLabel(maps, 'languages', i
 
   <ul class="mt-3 flex flex-wrap gap-2">
     {
-      data.harness.map((id) => (
-        <li>
-          <TagChip label={axisLabel(maps, 'harness', id)} href={`/harness/${id}/`} tone="harness" />
-        </li>
-      ))
-    }
-    {
       data.languages.map((id) => (
         <li>
-          <TagChip label={axisLabel(maps, 'languages', id)} href={`/languages/${id}/`} tone="lang" />
+          <TagChip label={languageLabel(languageNames, id)} href={`/languages/${id}/`} tone="lang" />
         </li>
       ))
     }

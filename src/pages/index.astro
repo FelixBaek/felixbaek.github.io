@@ -5,13 +5,11 @@
  */
 import SiteShell from '@layouts/SiteShell.astro';
 import PostCard from '@components/post/PostCard.astro';
-import { SITE, getAllPosts, getAxisCounts, getReviewQueue, formatDate } from '@lib/site';
+import { getCollection } from 'astro:content';
+import { SITE, getAllPosts, formatDate } from '@lib/site';
 
 const posts = await getAllPosts();
-const counts = await getAxisCounts();
-const review = await getReviewQueue();
-
-const languages = Object.entries(counts).filter(([key]) => key.startsWith('languages:')).length;
+const languages = (await getCollection('languages')).length;
 const lastUpdated = posts[0]?.data.lastmod ?? posts[0]?.data.date;
 ---
 
@@ -31,23 +29,6 @@ const lastUpdated = posts[0]?.data.lastmod ?? posts[0]?.data.date;
       <div class="flex flex-col gap-0.5">
         <dt class="text-[0.6875rem] tracking-[0.04em] text-fg-caption">언어</dt>
         <dd class="text-[1.5rem] leading-none font-bold tabular-nums text-fg">{languages}</dd>
-      </div>
-      <div class="flex flex-col gap-0.5">
-        <dt class="text-[0.6875rem] tracking-[0.04em] text-fg-caption">개념정리</dt>
-        <dd class="text-[1.5rem] leading-none font-bold tabular-nums text-fg">
-          {counts['harness:concept'] ?? 0}
-        </dd>
-      </div>
-      <div class="flex flex-col gap-0.5">
-        <dt class="text-[0.6875rem] tracking-[0.04em] text-fg-caption">복습 대기</dt>
-        <dd
-          class:list={[
-            'text-[1.5rem] leading-none font-bold tabular-nums',
-            review.length > 0 ? 'text-amber' : 'text-fg',
-          ]}
-        >
-          {review.length}
-        </dd>
       </div>
       <div class="flex flex-col gap-0.5">
         <dt class="text-[0.6875rem] tracking-[0.04em] text-fg-caption">Wasm 실험</dt>

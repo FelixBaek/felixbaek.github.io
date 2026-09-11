@@ -14,7 +14,7 @@ export async function GET(context: APIContext) {
       description: post.data.description,
       pubDate: post.data.lastmod ?? post.data.date,
       link: `/posts/${post.id}/`,
-      categories: [...post.data.tags, ...post.data.harness, ...post.data.languages],
+      categories: [...post.data.tags, ...post.data.languages],
     })),
     customData: '<language>ko-kr</language>',
   });

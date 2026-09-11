@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import AxisPage from '@components/page/AxisPage.astro';
-import { formatRelative, getPostsByAxis } from '@lib/site';
+import { getPostsByLanguage } from '@lib/site';
 
 export async function getStaticPaths() {
   const languages = await getCollection('languages');
@@ -9,21 +9,9 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const posts = await getPostsByAxis('languages', entry.id);
+const posts = await getPostsByLanguage(entry.id);
 
-const statusLabel: Record<string, string> = {
-  learning: '배우는 중',
-  active: '쓰는 중',
-  archived: '정리됨',
-};
-
-const latest = posts[0]?.data.lastmod ?? posts[0]?.data.date;
-const meta = [
-  { label: '상태', value: statusLabel[entry.data.status] ?? entry.data.status },
-  { label: '기록', value: `${posts.length}개` },
-  ...(entry.data.since ? [{ label: '시작', value: entry.data.since }] : []),
-  ...(latest ? [{ label: '최근 갱신', value: formatRelative(latest) }] : []),
-];
+const meta = [{ label: '기록', value: `${posts.length}개` }];
 ---
 
 <AxisPage
@@ -33,6 +21,5 @@ const meta = [
   summary={entry.body}
   posts={posts}
   meta={meta}
-  tone="lang"
-  emptyHint={`${entry.data.name} 기록을 아직 쓰지 않았습니다. 첫 글을 남기면 이 페이지가 채워집니다.`}
+  emptyHint="아직 공부 중이에요."
 />

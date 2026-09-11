@@ -172,8 +172,6 @@
     border-color: color-mix(in srgb, var(--color-copper) 32%, var(--color-line));
   }
   .chip--lang { border-left: 2px solid var(--color-copper); }
-  .chip--harness { border-left: 2px solid var(--color-petrol); }
-  .chip--project { border-left: 2px solid var(--color-fg-caption); }
 
   /* 축 표시 점 */
   .axis-dot {
@@ -184,6 +182,10 @@
     flex: none;
   }
   .axis-dot--lang { background: var(--color-copper); }
-  .axis-dot--harness { background: var(--color-petrol); }
-  .axis-dot--project { background: var(--color-fg-caption); }
+  .axis-dot--neutral { background: var(--color-fg-caption); }
+
+  .sidebar-folder > summary { list-style: none; }
+  .sidebar-folder > summary::-webkit-details-marker { display: none; }
+  .sidebar-folder__chevron { transition: transform 0.14s ease; }
+  .sidebar-folder[open] .sidebar-folder__chevron { transform: rotate(90deg); }
 }

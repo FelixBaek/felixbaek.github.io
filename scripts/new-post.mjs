@@ -2,7 +2,7 @@
 /**
  * 새 글 생성기
  *   npm run new:post "글 제목"
- *   npm run new:post "글 제목" -- --lang go --harness concept --tags slice,배열
+ *   npm run new:post "글 제목" -- --lang go --tags slice,배열
  *
  * 파일명은 제목을 슬러그로 바꿔 src/content/posts/<slug>.mdx 로 만든다.
  */
@@ -38,14 +38,6 @@ const langs = option('lang')
   .split(',')
   .map((value) => value.trim())
   .filter(Boolean);
-const harness = option('harness', 'concept')
-  .split(',')
-  .map((value) => value.trim())
-  .filter(Boolean);
-const projects = option('project')
-  .split(',')
-  .map((value) => value.trim())
-  .filter(Boolean);
 const tags = option('tags')
   .split(',')
   .map((value) => value.trim())
@@ -57,10 +49,7 @@ description: ""            # 목록·검색·OG에 쓰이는 한 줄 요약 (필
 date: ${iso}
 lastmod: ${iso}
 languages: ${JSON.stringify(langs)}      # 예: ["go"]
-harness: ${JSON.stringify(harness)}
-projects: ${JSON.stringify(projects)}
 tags: ${JSON.stringify(tags)}
-review: true               # 좌측 '복습 대기'에 노출
 wasm: []                   # 임베드한 Wasm 모듈 이름
 ---
 
@@ -87,4 +76,4 @@ await mkdir(dirname(target), { recursive: true });
 await writeFile(target, frontmatter, 'utf8');
 
 console.log(`생성: src/content/posts/${slug}.mdx`);
-console.log('축 id 는 src/content/{languages,harness,projects} 의 파일명과 맞춰야 합니다.');
+console.log('언어 id 는 src/content/languages 의 파일명과 맞춰야 합니다.');

@@ -4,13 +4,8 @@ description: "len(s) 는 바이트, utf8.RuneCountInString 은 문자 수. TinyG
 date: 2026-09-11T01:20:00+09:00
 lastmod: 2026-09-11T02:20:00+09:00
 languages: ["go"]
-harness: ["experiment"]
-projects: []
 tags: ["string", "utf8", "rune"]
-review: true
-reviewAfter: 2026-10-01T00:00:00+09:00
 wasm: ["rune_counter"]
-order: 2
 ---
 
 한글 문자열에서 `len(s)` 와 `for range` 로 센 문자가 달라서 당황한 적이 있습니다. 이유는 간단합니다 — Go의 문자열은 **바이트 슬라이스**입니다.

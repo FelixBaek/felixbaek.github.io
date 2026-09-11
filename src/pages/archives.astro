@@ -1,10 +1,9 @@
 ---
 import SiteShell from '@layouts/SiteShell.astro';
-import { formatDate, getAllPosts, getReviewQueue, getAxisMaps, axisLabel } from '@lib/site';
+import { formatDate, getAllPosts, getLanguageNames, languageLabel } from '@lib/site';
 
 const posts = await getAllPosts();
-const review = await getReviewQueue();
-const maps = await getAxisMaps();
+const languageNames = await getLanguageNames();
 
 const byYear = posts.reduce<Record<string, typeof posts>>((acc, post) => {
   const year = String(post.data.date.getFullYear());
@@ -23,32 +22,6 @@ const years = Object.keys(byYear).sort((a, b) => Number(b) - Number(a));
       전체 {posts.length}개 기록을 연도별로 모았습니다.
     </p>
   </header>
-
-  {
-    review.length > 0 && (
-      <section class="measure mb-8">
-        <h2 class="mb-3 flex items-center gap-3 text-[0.6875rem] font-bold tracking-[0.1em] text-fg-caption uppercase">
-          복습 대기
-          <span class="rounded border border-line px-1.5 text-[0.6875rem] font-semibold tabular-nums text-fg-muted">
-            {review.length}
-          </span>
-          <span class="h-px flex-1 bg-line" />
-        </h2>
-        <ul class="flex flex-col">
-          {review.map((post) => (
-            <li class="flex items-baseline justify-between gap-4 border-b border-line py-2.5 last:border-b-0">
-              <a class="text-[0.9375rem] font-medium text-fg hover:text-copper" href={`/posts/${post.id}/`}>
-                {post.data.title}
-              </a>
-              <span class="flex-none text-[0.6875rem] tabular-nums text-fg-caption">
-                {formatDate(post.data.reviewAfter ?? post.data.date, 'short')}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )
-  }
 
   {
     years.map((year) => (
@@ -70,7 +43,7 @@ const years = Object.keys(byYear).sort((a, b) => Number(b) - Number(a));
                 {formatDate(post.data.date, 'short')}
                 {post.data.languages.length > 0 && (
                   <span class="ml-2">
-                    {post.data.languages.map((id) => axisLabel(maps, 'languages', id)).join(', ')}
+                    {post.data.languages.map((id) => languageLabel(languageNames, id)).join(', ')}
                   </span>
                 )}
               </span>
