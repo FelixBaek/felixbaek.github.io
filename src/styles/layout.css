@@ -224,8 +224,7 @@ body[data-drawer="open"] { overflow: hidden; }
   .col-side,
   .col-aside,
   .topbar,
-  .site-footer,
-  .wasm-lab { display: none !important; }
+  .site-footer { display: none !important; }
   .shell { display: block; padding: 0; }
   .article-card { border: 0; box-shadow: none; padding: 0; }
   .prose { font-size: 11pt; line-height: 1.6; }

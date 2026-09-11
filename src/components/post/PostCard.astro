@@ -29,14 +29,6 @@ const languageLabels = data.languages.map((id) => languageLabel(languageNames, i
         </>
       )
     }
-    {
-      data.wasm.length > 0 && (
-        <>
-          <span class="meta-dot" aria-hidden="true">·</span>
-          <span class="text-petrol">Wasm {data.wasm.length}</span>
-        </>
-      )
-    }
   </div>
 
   <h3 class="mt-2 text-[1.125rem] leading-snug font-semibold tracking-[-0.015em]">

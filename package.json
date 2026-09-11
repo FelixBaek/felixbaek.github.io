@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Anvil — FelixBaek의 Astro + Tailwind v4 + Wasm 기술 블로그 테마",
+  "description": "Anvil — FelixBaek의 Astro + Tailwind CSS v4 기술 블로그 테마",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
@@ -11,29 +11,20 @@
     "preview": "astro preview",
     "check": "astro check",
     "search:index": "pagefind --site dist",
-    "wasm:rust": "bash scripts/build-wasm-rust.sh",
-    "wasm:go": "bash scripts/build-wasm-go.sh",
-    "wasm:all": "npm run wasm:rust && npm run wasm:go",
     "new:post": "node scripts/new-post.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "8.0.1",
-    "@astrojs/react": "6.0.5",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
     "@shikijs/transformers": "4.4.3",
     "@tailwindcss/vite": "4.3.3",
     "astro": "7.3.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tailwindcss": "4.3.3",
-    "vite-plugin-wasm": "3.6.0"
+    "tailwindcss": "4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@types/node": "^22.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
     "pagefind": "^1.5.0",
     "typescript": "^5.7.0"
   }

@@ -39,27 +39,6 @@ jobs:
       - name: Check Astro and TypeScript
         run: npm run check
 
-      - name: Test Rust Wasm logic
-        run: cargo test --manifest-path src/wasm/slice_capacity/Cargo.toml
-
-      # Wasm 산출물은 저장소에 커밋되어 있다(src/wasm/**/pkg, bin).
-      # 새로 빌드하려면 저장소 변수 REBUILD_WASM=true 로 켠다.
-      - name: Install wasm toolchain (optional)
-        if: vars.REBUILD_WASM == 'true'
-        run: |
-          rustup target add wasm32-unknown-unknown
-          curl -sSL -o /tmp/wasm-pack.tar.gz https://github.com/rustwasm/wasm-pack/releases/download/v0.15.0/wasm-pack-v0.15.0-x86_64-unknown-linux-musl.tar.gz
-          tar xzf /tmp/wasm-pack.tar.gz
-          sudo install -m755 wasm-pack-v0.15.0-x86_64-unknown-linux-musl/wasm-pack /usr/local/bin/wasm-pack
-          curl -sSL -o /tmp/tinygo.tar.gz https://github.com/tinygo-org/tinygo/releases/download/v0.42.0/tinygo0.42.0.linux-amd64.tar.gz
-          sudo tar xzf /tmp/tinygo.tar.gz -C /usr/local
-
-      - name: Build Wasm modules (optional)
-        if: vars.REBUILD_WASM == 'true'
-        run: |
-          export PATH="/usr/local/tinygo/bin:$PATH"
-          npm run wasm:all
-
       - name: Build site
         run: npm run build
 
