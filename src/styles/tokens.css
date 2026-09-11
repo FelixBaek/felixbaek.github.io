@@ -196,7 +196,6 @@
 
   .sidebar-tree {
     margin-left: 3px;
-    border-left: 1px solid var(--color-copper);
   }
   .sidebar-tree__item { position: relative; }
   .sidebar-tree__item::before {
