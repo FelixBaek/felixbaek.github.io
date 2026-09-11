@@ -26,6 +26,11 @@ export class SliceSim {
 }
 
 /**
+ * 코드 복사 전에 줄바꿈을 통일하고 렌더러가 붙인 마지막 개행을 제거한다.
+ */
+export function normalize_code(input: string): string;
+
+/**
  * 글의 현재 스크롤 위치를 0~1 사이의 읽기 진행률로 바꾼다.
  * 브라우저별 overscroll 값도 안전하게 범위 안으로 제한한다.
  */
@@ -36,6 +41,7 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly __wbg_slicesim_free: (a: number, b: number) => void;
+    readonly normalize_code: (a: number, b: number, c: number) => void;
     readonly reading_progress: (a: number, b: number, c: number) => number;
     readonly slicesim_cap: (a: number) => number;
     readonly slicesim_len: (a: number) => number;
@@ -45,7 +51,9 @@ export interface InitOutput {
     readonly slicesim_report: (a: number, b: number) => void;
     readonly slicesim_reset: (a: number) => void;
     readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
-    readonly __wbindgen_export: (a: number, b: number, c: number) => void;
+    readonly __wbindgen_export: (a: number, b: number) => number;
+    readonly __wbindgen_export2: (a: number, b: number, c: number, d: number) => number;
+    readonly __wbindgen_export3: (a: number, b: number, c: number) => void;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;

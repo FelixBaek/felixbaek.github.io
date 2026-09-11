@@ -19,6 +19,16 @@ pub fn reading_progress(scroll_y: f64, scroll_height: f64, viewport_height: f64)
     (scroll_y / max).clamp(0.0, 1.0)
 }
 
+/// 코드 복사 전에 줄바꿈을 통일하고 렌더러가 붙인 마지막 개행을 제거한다.
+#[wasm_bindgen]
+pub fn normalize_code(input: &str) -> String {
+    let mut normalized = input.replace("\r\n", "\n");
+    if normalized.ends_with('\n') {
+        normalized.pop();
+    }
+    normalized
+}
+
 #[wasm_bindgen]
 pub struct SliceSim {
     data: Vec<i32>,
@@ -133,5 +143,10 @@ mod tests {
         assert_eq!(reading_progress(500.0, 2_000.0, 1_000.0), 0.5);
         assert_eq!(reading_progress(2_000.0, 2_000.0, 1_000.0), 1.0);
         assert_eq!(reading_progress(0.0, 800.0, 1_000.0), 0.0);
+    }
+
+    #[test]
+    fn code_copy_normalizes_line_endings() {
+        assert_eq!(normalize_code("let x = 1;\r\nprintln!(\"{x}\");\r\n"), "let x = 1;\nprintln!(\"{x}\");");
     }
 }

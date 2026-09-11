@@ -8,6 +8,29 @@ type ThemePref = 'auto' | 'light' | 'dark';
 const root = document.documentElement;
 const THEME_KEY = 'anvil-theme';
 
+interface RustTools {
+  default: (input: { module_or_path: ArrayBuffer }) => Promise<unknown>;
+  normalize_code: (input: string) => string;
+  reading_progress: (scrollY: number, scrollHeight: number, viewportHeight: number) => number;
+}
+
+let rustTools: RustTools | undefined;
+let rustToolsPromise: Promise<RustTools> | undefined;
+
+function loadRustTools(): Promise<RustTools> {
+  rustToolsPromise ??= (async () => {
+    const [module, wasmUrl] = await Promise.all([
+      import('@wasm/slice_capacity/pkg/slice_capacity.js'),
+      import('@wasm/slice_capacity/pkg/slice_capacity_bg.wasm?url'),
+    ]);
+    const bytes = await fetch(wasmUrl.default).then((response) => response.arrayBuffer());
+    await module.default({ module_or_path: bytes });
+    rustTools = module;
+    return module;
+  })();
+  return rustToolsPromise;
+}
+
 /* ---------------- 테마 ---------------- */
 
 function systemTheme(): 'light' | 'dark' {
@@ -127,6 +150,8 @@ function initDrawer(): void {
 /* ---------------- 코드 복사 ---------------- */
 
 function initCodeCopy(): void {
+  if (document.querySelector('[data-code-copy]')) void loadRustTools().catch(() => undefined);
+
   document.addEventListener('click', (event) => {
     const button = (event.target as HTMLElement).closest<HTMLElement>('[data-code-copy]');
     if (!button) return;
@@ -136,7 +161,9 @@ function initCodeCopy(): void {
     if (!code) return;
 
     const label = button.querySelector<HTMLElement>('[data-copy-label], .code-block__copy-text');
-    const value = (code as HTMLElement).innerText.replace(/\n$/, '');
+    const raw = (code as HTMLElement).innerText;
+    const value = rustTools?.normalize_code(raw) ?? raw.replace(/\r\n/g, '\n').replace(/\n$/, '');
+    button.dataset.engine = rustTools ? 'rust-wasm' : 'javascript-fallback';
 
     const done = (ok: boolean): void => {
       button.dataset.copied = ok ? 'true' : 'false';
@@ -230,12 +257,7 @@ function initReading(): void {
   if (progress) {
     void (async () => {
       try {
-        const [module, wasmUrl] = await Promise.all([
-          import('@wasm/slice_capacity/pkg/slice_capacity.js'),
-          import('@wasm/slice_capacity/pkg/slice_capacity_bg.wasm?url'),
-        ]);
-        const bytes = await fetch(wasmUrl.default).then((response) => response.arrayBuffer());
-        await module.default({ module_or_path: bytes });
+        const module = await loadRustTools();
         progressRatio = module.reading_progress;
         progress.dataset.engine = 'rust-wasm';
         update();
