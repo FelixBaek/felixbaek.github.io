@@ -80,6 +80,19 @@ export class SliceSim {
     }
 }
 if (Symbol.dispose) SliceSim.prototype[Symbol.dispose] = SliceSim.prototype.free;
+
+/**
+ * 글의 현재 스크롤 위치를 0~1 사이의 읽기 진행률로 바꾼다.
+ * 브라우저별 overscroll 값도 안전하게 범위 안으로 제한한다.
+ * @param {number} scroll_y
+ * @param {number} scroll_height
+ * @param {number} viewport_height
+ * @returns {number}
+ */
+export function reading_progress(scroll_y, scroll_height, viewport_height) {
+    const ret = wasm.reading_progress(scroll_y, scroll_height, viewport_height);
+    return ret;
+}
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,

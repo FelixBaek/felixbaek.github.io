@@ -13,8 +13,26 @@ package main
 import (
 	"fmt"
 	"syscall/js"
+	"unicode"
 	"unicode/utf8"
 )
+
+func readingMinutes(text string, charsPerMinute int) int {
+	if charsPerMinute <= 0 {
+		charsPerMinute = 500
+	}
+	chars := 0
+	for _, char := range text {
+		if !unicode.IsSpace(char) {
+			chars++
+		}
+	}
+	minutes := (chars + charsPerMinute/2) / charsPerMinute
+	if minutes < 1 {
+		return 1
+	}
+	return minutes
+}
 
 func main() {
 	js.Global().Set("__anvilRuneCount", js.FuncOf(func(this js.Value, args []js.Value) any {
@@ -23,6 +41,18 @@ func main() {
 			text = args[0].String()
 		}
 		return fmt.Sprintf(`{"bytes":%d,"runes":%d}`, len(text), utf8.RuneCountInString(text))
+	}))
+
+	js.Global().Set("__anvilReadingMinutes", js.FuncOf(func(this js.Value, args []js.Value) any {
+		text := ""
+		charsPerMinute := 500
+		if len(args) > 0 {
+			text = args[0].String()
+		}
+		if len(args) > 1 {
+			charsPerMinute = args[1].Int()
+		}
+		return readingMinutes(text, charsPerMinute)
 	}))
 
 	// 브라우저가 계속 함수를 호출할 수 있도록 런타임을 살려 둔다.

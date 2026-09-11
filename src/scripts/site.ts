@@ -172,6 +172,10 @@ function initReading(): void {
   }
 
   let active: string | null = null;
+  let progressRatio = (scrollY: number, scrollHeight: number, viewportHeight: number): number => {
+    const max = scrollHeight - viewportHeight;
+    return max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+  };
 
   const setActive = (id: string): void => {
     if (active === id) return;
@@ -186,8 +190,7 @@ function initReading(): void {
 
   const update = (): void => {
     if (progress) {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      const ratio = progressRatio(window.scrollY, document.documentElement.scrollHeight, window.innerHeight);
       progress.style.transform = `scaleX(${ratio.toFixed(4)})`;
     }
     if (!targets.length) return;
@@ -223,6 +226,78 @@ function initReading(): void {
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   update();
+
+  if (progress) {
+    void (async () => {
+      try {
+        const [module, wasmUrl] = await Promise.all([
+          import('@wasm/slice_capacity/pkg/slice_capacity.js'),
+          import('@wasm/slice_capacity/pkg/slice_capacity_bg.wasm?url'),
+        ]);
+        const bytes = await fetch(wasmUrl.default).then((response) => response.arrayBuffer());
+        await module.default({ module_or_path: bytes });
+        progressRatio = module.reading_progress;
+        progress.dataset.engine = 'rust-wasm';
+        update();
+      } catch {
+        progress.dataset.engine = 'javascript-fallback';
+      }
+    })();
+  }
+}
+
+/* ---------------- Go Wasm 읽기 시간 ---------------- */
+
+function initReadingTime(): void {
+  const body = document.querySelector<HTMLElement>('[data-post-body]');
+  const output = document.querySelector<HTMLElement>('[data-reading-minutes]');
+  if (!body || !output) return;
+
+  void (async () => {
+    try {
+      const [wasmUrl, execUrl] = await Promise.all([
+        import('@wasm/rune-counter/bin/rune_counter.wasm?url'),
+        import('@wasm/rune-counter/bin/wasm_exec.js?url'),
+      ]);
+
+      await new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = execUrl.default;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Go runtime load failed'));
+        document.head.appendChild(script);
+      });
+
+      const GoRuntime = (window as unknown as {
+        Go?: new () => {
+          importObject: WebAssembly.Imports;
+          run: (instance: WebAssembly.Instance) => Promise<unknown>;
+        };
+      }).Go;
+      if (!GoRuntime) throw new Error('Go runtime unavailable');
+
+      const bytes = await fetch(wasmUrl.default).then((response) => response.arrayBuffer());
+      const go = new GoRuntime();
+      const { instance } = await WebAssembly.instantiate(bytes, go.importObject);
+      void go.run(instance);
+
+      const deadline = performance.now() + 5_000;
+      let calculate: ((text: string, charsPerMinute: number) => number) | undefined;
+      while (!calculate && performance.now() < deadline) {
+        calculate = (window as unknown as {
+          __anvilReadingMinutes?: (text: string, charsPerMinute: number) => number;
+        }).__anvilReadingMinutes;
+        if (!calculate) await new Promise((resolve) => window.setTimeout(resolve, 25));
+      }
+      if (!calculate) throw new Error('Go reading function unavailable');
+
+      output.textContent = `약 ${calculate(body.innerText, 500)}분`;
+      output.dataset.engine = 'go-wasm';
+      output.title = 'Go WebAssembly로 본문을 계산한 읽기 시간';
+    } catch {
+      output.dataset.engine = 'static-fallback';
+    }
+  })();
 }
 
 /* ---------------- 접이식 상세 ---------------- */
@@ -243,6 +318,7 @@ function boot(): void {
   initDrawer();
   initCodeCopy();
   initReading();
+  initReadingTime();
   initTocInline();
   initCommentsTheme();
 

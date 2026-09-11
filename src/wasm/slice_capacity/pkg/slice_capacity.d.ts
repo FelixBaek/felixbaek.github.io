@@ -25,11 +25,18 @@ export class SliceSim {
     reset(): void;
 }
 
+/**
+ * 글의 현재 스크롤 위치를 0~1 사이의 읽기 진행률로 바꾼다.
+ * 브라우저별 overscroll 값도 안전하게 범위 안으로 제한한다.
+ */
+export function reading_progress(scroll_y: number, scroll_height: number, viewport_height: number): number;
+
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly __wbg_slicesim_free: (a: number, b: number) => void;
+    readonly reading_progress: (a: number, b: number, c: number) => number;
     readonly slicesim_cap: (a: number) => number;
     readonly slicesim_len: (a: number) => number;
     readonly slicesim_new: (a: number, b: number) => number;

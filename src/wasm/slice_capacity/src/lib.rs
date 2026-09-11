@@ -8,6 +8,17 @@
 
 use wasm_bindgen::prelude::*;
 
+/// 글의 현재 스크롤 위치를 0~1 사이의 읽기 진행률로 바꾼다.
+/// 브라우저별 overscroll 값도 안전하게 범위 안으로 제한한다.
+#[wasm_bindgen]
+pub fn reading_progress(scroll_y: f64, scroll_height: f64, viewport_height: f64) -> f64 {
+    let max = scroll_height - viewport_height;
+    if max <= 0.0 {
+        return 0.0;
+    }
+    (scroll_y / max).clamp(0.0, 1.0)
+}
+
 #[wasm_bindgen]
 pub struct SliceSim {
     data: Vec<i32>,
@@ -114,5 +125,13 @@ mod tests {
         assert_eq!(sim.len_(), 2);
         assert_eq!(sim.cap_(), 2);
         assert_eq!(sim.reallocs(), 0);
+    }
+
+    #[test]
+    fn reading_progress_is_clamped() {
+        assert_eq!(reading_progress(-10.0, 2_000.0, 1_000.0), 0.0);
+        assert_eq!(reading_progress(500.0, 2_000.0, 1_000.0), 0.5);
+        assert_eq!(reading_progress(2_000.0, 2_000.0, 1_000.0), 1.0);
+        assert_eq!(reading_progress(0.0, 800.0, 1_000.0), 0.0);
     }
 }

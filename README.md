@@ -2,7 +2,7 @@
 
 Astro 7 + Tailwind CSS v4 + WebAssembly(Rust/Go) 기반 개인 기술 블로그.
 3단 레이아웃(좌측 기록 패널 · 중앙 본문 · 우측 목차)으로 읽기 중심을 유지하고,
-본문 안에서 Rust·Go Wasm 모듈이 Astro Island 로 실제로 실행됩니다.
+Rust Wasm은 글의 읽기 진행률을, Go Wasm은 본문 읽기 시간을 브라우저에서 계산합니다.
 
 - 사이트: <https://felixbaek.github.io/>
 - 배포: GitHub Actions → GitHub Pages (`main` 브랜치 push)
@@ -16,7 +16,7 @@ Astro 7 + Tailwind CSS v4 + WebAssembly(Rust/Go) 기반 개인 기술 블로그.
 | 콘텐츠 | MDX + Astro Content Collections(zod 스키마) |
 | 코드 하이라이트 | Shiki (커스텀 라이트/다크 테마 + transformers) |
 | 검색 | Pagefind (빌드 후 인덱싱, `force_language: ko`) |
-| Wasm | Rust(wasm-pack) · Go(TinyGo) → `client:visible` 아일랜드 |
+| Wasm | Rust(wasm-pack) 읽기 진행률 · Go(TinyGo) 읽기 시간 |
 
 ## 명령
 

@@ -2,6 +2,7 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export const __wbg_slicesim_free: (a: number, b: number) => void;
+export const reading_progress: (a: number, b: number, c: number) => number;
 export const slicesim_cap: (a: number) => number;
 export const slicesim_len: (a: number) => number;
 export const slicesim_new: (a: number, b: number) => number;

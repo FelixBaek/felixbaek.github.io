@@ -20,7 +20,7 @@ const updated = data.lastmod && data.lastmod.valueOf() > data.date.valueOf() ? d
     {formatDate(data.date)}
   </time>
   <span class="meta-dot" aria-hidden="true">·</span>
-  <span title="읽는 시간">약 {minutes}분</span>
+  <span title="읽는 시간" data-reading-minutes>약 {minutes}분</span>
 
   {
     updated && (
