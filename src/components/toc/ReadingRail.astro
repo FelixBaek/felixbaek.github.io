@@ -1,0 +1,25 @@
+---
+/**
+ * ReadingRail — 모바일에서 목차를 대신하는 최소 장치
+ *  1) 화면 최상단 2px 진행선
+ *  2) 우하단 현재 섹션 라벨 (xl 미만에서만)
+ */
+---
+
+<div
+  class="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 bg-transparent"
+  aria-hidden="true"
+>
+  <div
+    class="h-full origin-left scale-x-0 bg-copper transition-transform duration-75"
+    data-progress-bar
+  ></div>
+</div>
+
+<div
+  class="pointer-events-none fixed right-3 bottom-3 z-30 max-w-[60vw] rounded-lg border border-line bg-surface/95 px-3 py-2 text-[0.6875rem] leading-tight text-fg-muted shadow-sm backdrop-blur xl:hidden"
+  aria-hidden="true"
+>
+  <span class="mr-1 text-fg-caption">지금</span>
+  <span class="font-medium text-fg" data-rail-label>—</span>
+</div>

@@ -1,0 +1,38 @@
+/* ------------------------------------------------------------------
+   표: 좁은 화면에서 가로 스크롤.
+   rehype 래퍼 대신 CSS 로 처리한다 (Astro 7 의 MDX 파이프라인 의존 제거).
+   ------------------------------------------------------------------ */
+
+.prose table {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.925rem;
+  line-height: 1.6;
+}
+
+.prose thead th {
+  padding: 0.65rem 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--color-fg-muted);
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-line);
+  white-space: nowrap;
+  text-align: left;
+}
+
+.prose tbody td {
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--color-line);
+  vertical-align: top;
+}
+
+.prose tbody tr:last-child td { border-bottom: 0; }
+.prose tbody tr:hover { background: var(--color-surface-2); }
+
+/* 표 위아래 여백 + 둥근 모서리 느낌은 부모(.prose) 흐름으로 처리 */
+.prose table { margin: 1.8em 0; }

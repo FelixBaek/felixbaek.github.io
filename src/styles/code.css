@@ -1,0 +1,162 @@
+/* ------------------------------------------------------------------
+   코드 블록 (Shiki 이중 테마 + rehype 래퍼)
+   구조:
+   .code-block > .code-block__head (.code-block__lang / __file / __copy)
+               > .code-block__body > pre.astro-code
+   ------------------------------------------------------------------ */
+
+.code-block {
+  margin: 1.8em 0;
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-code-line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.code-block__head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.6rem 0.4rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-fg-caption);
+  background: var(--color-code-head);
+  border-bottom: 1px solid var(--color-code-line);
+}
+
+.code-block__lang {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-fg-muted);
+}
+
+.code-block__file {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-fg);
+}
+
+.code-block__meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.code-block__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  color: var(--color-fg-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 5px;
+  opacity: 0;
+  transition: opacity 0.16s ease, color 0.14s ease, border-color 0.14s ease;
+}
+.code-block:hover .code-block__copy,
+.code-block__copy:focus-visible { opacity: 1; }
+.code-block__copy:hover {
+  color: var(--color-copper);
+  border-color: color-mix(in srgb, var(--color-copper) 34%, var(--color-line));
+}
+.code-block__copy[data-copied="true"] {
+  opacity: 1;
+  color: var(--color-copper);
+  border-color: var(--color-copper);
+}
+@media (hover: none) {
+  .code-block__copy { opacity: 1; }
+}
+
+.code-block__body { overflow-x: auto; }
+
+.code-block__body pre,
+.code-block pre.astro-code {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.90625rem; /* 14.5px */
+  line-height: 1.65;
+  tab-size: 2;
+  background: transparent !important;
+}
+
+/* --- 이중 테마: Shiki가 --shiki-light / --shiki-dark 를 심어준다 --- */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+  background-color: transparent;
+}
+
+[data-theme="dark"] .astro-code,
+[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark);
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme-pref="auto"] .astro-code,
+  html[data-theme-pref="auto"] .astro-code span {
+    color: var(--shiki-dark);
+  }
+}
+
+/* --- 줄 강조 --- */
+.astro-code .line { display: inline-block; width: 100%; }
+
+.astro-code .line.highlighted,
+.astro-code .line.hl,
+.astro-code .highlighted {
+  margin-inline: -1.1rem;
+  padding-inline: 1.1rem;
+  background: var(--color-hl);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--color-copper) 70%, transparent);
+}
+
+.astro-code .line.diff.add {
+  background: color-mix(in srgb, var(--color-petrol) 14%, transparent);
+}
+.astro-code .line.diff.remove {
+  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  opacity: 0.85;
+}
+.astro-code .line.diff.add::before,
+.astro-code .line.diff.remove::before {
+  display: inline-block;
+  width: 1ch;
+  color: var(--color-fg-caption);
+}
+.astro-code .line.diff.add::before { content: "+"; }
+.astro-code .line.diff.remove::before { content: "-"; }
+
+.astro-code.has-focused .line:not(.focused) {
+  opacity: 0.55;
+  transition: opacity 0.16s ease;
+}
+.astro-code.has-focused:hover .line:not(.focused) { opacity: 1; }
+
+/* --- 줄 번호 (numbers 메타) --- */
+.astro-code code { counter-reset: line; }
+.code-block--numbered .astro-code .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2ch;
+  margin-right: 1.25rem;
+  color: var(--color-fg-caption);
+  text-align: right;
+  user-select: none;
+}
+.code-block--numbered .astro-code[style*="--start-line"] { counter-reset: none; }
+
+/* 코드 블록 안에서 스크롤바가 콘텐츠를 가리지 않도록 */
+.code-block__body::-webkit-scrollbar { height: 10px; }
+.code-block__body::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border-radius: 999px;
+}

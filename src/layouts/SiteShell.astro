@@ -1,0 +1,169 @@
+---
+/**
+ * SiteShell — 모든 페이지의 3단 골격
+ * 좌: Sidebar / 중앙: slot / 우: Toc(aside)
+ * 좁은 화면에서 좌측은 드로어로, TOC는 본문 안 접이식으로 이동한다.
+ */
+import Sidebar from '@components/nav/Sidebar.astro';
+import Toc, { type Heading } from '@components/toc/Toc.astro';
+import ReadingRail from '@components/toc/ReadingRail.astro';
+import { SITE } from '@lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** 글이면 목차 헤딩 전달 */
+  headings?: Heading[];
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+}
+
+const {
+  title,
+  description = SITE.description,
+  headings = [],
+  noindex = false,
+  ogType = 'website',
+} = Astro.props;
+
+const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SITE.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+const hasToc = headings.filter((h) => h.depth === 2 || h.depth === 3).length >= 2;
+---
+
+<!doctype html>
+<html lang="ko" data-theme="light" data-theme-pref="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:locale" content="ko_KR" />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1113" media="(prefers-color-scheme: dark)" />
+
+    {/* 페인트 이전에 테마 확정 → 깜빡임 없음 */}
+    <script is:inline>
+      (function () {
+        try {
+          var pref = localStorage.getItem('anvil-theme') || 'auto';
+          var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = pref === 'auto' ? (dark ? 'dark' : 'light') : pref;
+          var el = document.documentElement;
+          el.setAttribute('data-theme', theme);
+          el.setAttribute('data-theme-pref', pref);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+
+    <header class="topbar">
+      <button
+        type="button"
+        data-drawer-toggle
+        aria-expanded="false"
+        aria-controls="site-drawer"
+        class="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border border-line bg-surface text-fg"
+      >
+        <span aria-hidden="true" class="flex flex-col gap-1">
+          <span class="block h-[1.5px] w-4 bg-current"></span>
+          <span class="block h-[1.5px] w-4 bg-current"></span>
+        </span>
+        <span class="sr-only">기록 패널 열기</span>
+      </button>
+
+      <a href="/" class="min-w-0 flex-1 truncate text-[0.875rem] font-bold text-fg">{SITE.title}</a>
+
+      <button
+        type="button"
+        data-theme-toggle
+        class="inline-flex h-11 cursor-pointer items-center gap-1 rounded-md border border-line bg-surface px-2.5 text-[0.75rem] text-fg-muted"
+      >
+        <span data-theme-label>시스템</span>
+        <span class="sr-only">테마 전환</span>
+      </button>
+    </header>
+
+    <div class="shell">
+      <!-- 데스크톱 좌측 패널 -->
+      <aside class="col-side" aria-label="기록 패널">
+        <Sidebar />
+      </aside>
+
+      <main id="main" class="col-main" tabindex="-1">
+        <slot />
+      </main>
+
+      {
+        hasToc && (
+          <aside class="col-aside" aria-label="이 글의 목차">
+            <Toc headings={headings} variant="aside" />
+          </aside>
+        )
+      }
+    </div>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <p class="flex flex-wrap items-center gap-1">
+          <span>&copy; {new Date().getFullYear()} {SITE.author}</span>
+          <span class="meta-dot" aria-hidden="true">·</span>
+          <span>Astro + Tailwind v4 + Wasm</span>
+          <span class="meta-dot" aria-hidden="true">·</span>
+          <a class="hover:text-copper" href="/rss.xml">RSS</a>
+        </p>
+        <p class="flex items-center gap-3">
+          <a class="hover:text-copper" href="/about/">소개</a>
+          <button type="button" data-scroll-top class="cursor-pointer hover:text-copper">맨 위로</button>
+        </p>
+      </div>
+    </footer>
+
+    <!-- 좁은 화면: 좌측 패널 드로어 -->
+    <div class="scrim" data-scrim hidden></div>
+    <aside id="site-drawer" class="drawer" data-drawer data-open="false" aria-hidden="true" aria-label="기록 패널">
+      <div class="mb-4 flex items-center justify-between">
+        <span class="text-[0.75rem] font-bold tracking-[0.1em] text-fg-caption uppercase">기록 패널</span>
+        <button
+          type="button"
+          data-drawer-toggle
+          class="min-h-11 cursor-pointer rounded-md border border-line px-3 py-1 text-[0.75rem] text-fg-muted"
+        >
+          닫기
+        </button>
+      </div>
+      <Sidebar />
+    </aside>
+
+    {hasToc && <ReadingRail />}
+
+    <script>
+      import '@scripts/site';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  @import '@styles/tokens.css';
+  @import '@styles/layout.css';
+  @import '@styles/prose.css';
+  @import '@styles/table.css';
+  @import '@styles/code.css';
+  @import '@styles/lab.css';
+</style>

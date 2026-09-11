@@ -1,0 +1,67 @@
+---
+/**
+ * 축(axis) 아카이브 페이지 공용 목록
+ * /languages/[slug] · /harness/[slug] · /projects/[slug] 가 같은 모양을 쓴다.
+ */
+import SiteShell from '@layouts/SiteShell.astro';
+import PostCard from '@components/post/PostCard.astro';
+import type { Post } from '@lib/site';
+
+interface Props {
+  title: string;
+  eyebrow: string;
+  definition?: string;
+  summary?: string;
+  posts: Post[];
+  meta?: Array<{ label: string; value: string }>;
+  emptyHint?: string;
+  tone?: 'lang' | 'harness' | 'project';
+}
+
+const { title, eyebrow, definition, summary, posts, meta = [], emptyHint, tone = 'project' } = Astro.props;
+---
+
+<SiteShell title={title} description={definition ?? summary ?? title}>
+  <header class="measure pt-2 pb-6">
+    <p class={`flex items-center gap-2 text-[0.75rem] font-semibold tracking-[0.08em] uppercase text-fg-caption`}>
+      <span class={`axis-dot axis-dot--${tone}`}></span>
+      {eyebrow}
+    </p>
+    <h1 class="mt-3 text-[clamp(1.5rem,1.2rem+1vw,1.875rem)] leading-tight font-bold tracking-[-0.02em] text-fg">
+      {title}
+    </h1>
+    {definition && <p class="mt-3 text-[1.0625rem] leading-relaxed text-fg-muted">{definition}</p>}
+    {summary && <p class="mt-2 text-[0.9375rem] leading-relaxed text-fg-muted">{summary}</p>}
+
+    {
+      meta.length > 0 && (
+        <dl class="mt-5 flex flex-wrap gap-x-6 gap-y-3 border-t border-line pt-4">
+          {meta.map((item) => (
+            <div class="flex flex-col gap-0.5">
+              <dt class="text-[0.6875rem] tracking-[0.04em] text-fg-caption">{item.label}</dt>
+              <dd class="text-[0.9375rem] font-semibold text-fg">{item.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+
+    <p class="mt-5 text-[0.75rem] tracking-[0.04em] text-fg-caption">{posts.length}개 기록</p>
+  </header>
+
+  <section class="measure" data-pagefind-body>
+    {
+      posts.length > 0 ? (
+        <div>
+          {posts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      ) : (
+        <p class="rounded-lg border border-dashed border-line-strong px-4 py-5 text-[0.875rem] leading-relaxed text-fg-caption">
+          {emptyHint ?? '아직 이 축에 글이 없습니다.'}
+        </p>
+      )
+    }
+  </section>
+</SiteShell>

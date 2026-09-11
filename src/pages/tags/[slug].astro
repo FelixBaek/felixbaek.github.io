@@ -1,0 +1,42 @@
+---
+import SiteShell from '@layouts/SiteShell.astro';
+import { slugifyTag, getAllPosts, formatDate } from '@lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const tags = new Set<string>();
+  posts.forEach((post) => post.data.tags.forEach((tag) => tags.add(tag)));
+  return Array.from(tags).map((tag) => ({
+    params: { slug: slugifyTag(tag) },
+    props: {
+      tag,
+      posts: posts.filter((post) => post.data.tags.includes(tag)),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<SiteShell title={`#${tag}`} description={`${tag} 태그가 붙은 기록 ${posts.length}개`}>
+  <header class="measure pt-2 pb-6">
+    <p class="text-[0.75rem] font-semibold tracking-[0.08em] text-fg-caption uppercase">Tag</p>
+    <h1 class="mt-3 text-[1.75rem] leading-tight font-bold tracking-[-0.02em] text-fg">#{tag}</h1>
+    <p class="mt-4 text-[0.75rem] tracking-[0.04em] text-fg-caption">{posts.length}개 기록</p>
+  </header>
+
+  <section class="measure">
+    <ul class="flex flex-col">
+      {
+        posts.map((post) => (
+          <li class="border-b border-line py-3.5 last:border-b-0">
+            <a class="text-[1rem] font-semibold text-fg hover:text-copper" href={`/posts/${post.id}/`}>
+              {post.data.title}
+            </a>
+            <span class="ml-2 text-[0.75rem] tabular-nums text-fg-caption">{formatDate(post.data.date, 'short')}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</SiteShell>

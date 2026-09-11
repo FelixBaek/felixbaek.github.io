@@ -1,0 +1,91 @@
+---
+/**
+ * 글 상세 (MDX Post)
+ * eyebrow → 제목 → lede → 메타 → 태그 → 묶음 → [모바일 목차] → 본문(MDX + Wasm Lab) → 하단 이동
+ */
+import SiteShell from '@layouts/SiteShell.astro';
+import Toc from '@components/toc/Toc.astro';
+import TagChip from '@components/post/TagChip.astro';
+import PostMeta from '@components/post/PostMeta.astro';
+import SeriesCard from '@components/post/SeriesCard.astro';
+import PostNav from '@components/post/PostNav.astro';
+import { axisLabel, getAxisMaps, slugifyTag, type Post } from '@lib/site';
+
+interface Props {
+  post: Post;
+  headings: { depth: number; slug: string; text: string }[];
+  prev?: Post;
+  next?: Post;
+}
+
+const { post, headings, prev, next } = Astro.props;
+const { data } = post;
+const maps = await getAxisMaps();
+
+const eyebrow = [
+  ...data.languages.map((id) => ({ label: axisLabel(maps, 'languages', id), href: `/languages/${id}/`, tone: 'lang' as const })),
+  ...data.harness.map((id) => ({ label: axisLabel(maps, 'harness', id), href: `/harness/${id}/`, tone: 'harness' as const })),
+  ...data.projects.map((id) => ({ label: axisLabel(maps, 'projects', id), href: `/projects/${id}/`, tone: 'project' as const })),
+];
+---
+
+<SiteShell title={data.title} description={data.description} headings={headings} ogType="article" noindex={data.noindex}>
+  <article class="article-card measure" itemscope itemtype="https://schema.org/BlogPosting" data-pagefind-body>
+    <header class="flex flex-col">
+      {
+        eyebrow.length > 0 && (
+          <p class="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem] font-semibold text-copper">
+            {eyebrow.map((item, index) => (
+              <>
+                {index > 0 && <span class="text-line-strong">·</span>}
+                <a href={item.href} class="hover:underline">{item.label}</a>
+              </>
+            ))}
+          </p>
+        )
+      }
+
+      <h1
+        class="text-[clamp(1.75rem,1.3rem+1.4vw,2.375rem)] leading-[1.24] font-bold tracking-[-0.02em] text-fg"
+        itemprop="headline"
+      >
+        {data.title}
+      </h1>
+
+      {data.description && (
+        <p class="mt-3 text-[1.0625rem] leading-relaxed text-fg-muted" itemprop="description">
+          {data.description}
+        </p>
+      )}
+
+      <PostMeta post={post} />
+
+      <ul class="mt-4 flex flex-wrap gap-2">
+        {
+          data.harness.map((id) => (
+            <li>
+              <TagChip label={axisLabel(maps, 'harness', id)} href={`/harness/${id}/`} tone="harness" />
+            </li>
+          ))
+        }
+        {
+          data.tags.map((tag) => (
+            <li>
+              <TagChip label={tag} href={`/tags/${slugifyTag(tag)}/`} tone="plain" />
+            </li>
+          ))
+        }
+      </ul>
+    </header>
+
+    <SeriesCard post={post} />
+
+    <Toc headings={headings} variant="inline" />
+
+    <div class="prose mt-8" itemprop="articleBody">
+      <slot />
+    </div>
+
+    <PostNav prev={prev} next={next} />
+  </article>
+</SiteShell>

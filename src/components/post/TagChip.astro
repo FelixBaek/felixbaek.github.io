@@ -1,0 +1,32 @@
+---
+interface Props {
+  label: string;
+  href?: string;
+  tone?: 'lang' | 'harness' | 'project' | 'plain';
+  count?: number;
+}
+
+const { label, href, tone = 'plain', count } = Astro.props;
+const toneClass =
+  tone === 'lang'
+    ? 'chip chip--lang'
+    : tone === 'harness'
+      ? 'chip chip--harness'
+      : tone === 'project'
+        ? 'chip chip--project'
+        : 'chip';
+---
+
+{
+  href ? (
+    <a class={toneClass} href={href}>
+      {label}
+      {typeof count === 'number' && <span class="ml-1 tabular-nums text-fg-caption">{count}</span>}
+    </a>
+  ) : (
+    <span class={toneClass}>
+      {label}
+      {typeof count === 'number' && <span class="ml-1 tabular-nums text-fg-caption">{count}</span>}
+    </span>
+  )
+}

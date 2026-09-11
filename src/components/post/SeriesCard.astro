@@ -1,0 +1,41 @@
+---
+/**
+ * 같은 harness(=기록 방식) 글을 읽는 순서대로 보여주는 묶음 카드.
+ * 2개 이상일 때만 노출한다.
+ */
+import { getHarnessBundle, type Post } from '@lib/site';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const bundle = post.data.harness.length ? await getHarnessBundle(post) : [];
+const show = bundle.length >= 2;
+const label = post.data.harness[0];
+---
+
+{
+  show && (
+    <aside class="mt-6 rounded-lg border border-line bg-surface-2 px-4 py-3.5">
+      <p class="text-[0.6875rem] font-bold tracking-[0.1em] text-fg-caption uppercase">
+        {label} 묶음
+      </p>
+      <ol class="mt-2.5 flex flex-wrap gap-x-4 gap-y-1">
+        {bundle.map((item, index) => (
+          <li class="flex items-baseline gap-1.5 text-[0.875rem]">
+            <span class="text-[0.6875rem] tabular-nums text-fg-caption">{index + 1}</span>
+            <a
+              href={`/posts/${item.id}/`}
+              class:list={[
+                item.id === post.id ? 'font-semibold text-copper' : 'text-fg-muted hover:text-copper',
+              ]}
+            >
+              {item.data.title}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </aside>
+  )
+}

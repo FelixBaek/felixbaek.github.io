@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import AxisPage from '@components/page/AxisPage.astro';
+import { formatRelative, getPostsByAxis } from '@lib/site';
+
+export async function getStaticPaths() {
+  const languages = await getCollection('languages');
+  return languages.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const posts = await getPostsByAxis('languages', entry.id);
+
+const statusLabel: Record<string, string> = {
+  learning: '배우는 중',
+  active: '쓰는 중',
+  archived: '정리됨',
+};
+
+const latest = posts[0]?.data.lastmod ?? posts[0]?.data.date;
+const meta = [
+  { label: '상태', value: statusLabel[entry.data.status] ?? entry.data.status },
+  { label: '기록', value: `${posts.length}개` },
+  ...(entry.data.since ? [{ label: '시작', value: entry.data.since }] : []),
+  ...(latest ? [{ label: '최근 갱신', value: formatRelative(latest) }] : []),
+];
+---
+
+<AxisPage
+  title={entry.data.name}
+  eyebrow="Languages"
+  definition={entry.data.summary}
+  summary={entry.body}
+  posts={posts}
+  meta={meta}
+  tone="lang"
+  emptyHint={`${entry.data.name} 기록을 아직 쓰지 않았습니다. 첫 글을 남기면 이 페이지가 채워집니다.`}
+/>

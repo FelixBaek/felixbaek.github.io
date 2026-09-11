@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import AxisPage from '@components/page/AxisPage.astro';
+import { getPostsByAxis } from '@lib/site';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const posts = await getPostsByAxis('projects', entry.id);
+
+const statusLabel: Record<string, string> = {
+  active: '진행 중',
+  paused: '멈춤',
+  archived: '정리됨',
+  planned: '예정',
+};
+
+const meta = [
+  { label: '상태', value: statusLabel[entry.data.status] ?? entry.data.status },
+  { label: '기록', value: `${posts.length}개` },
+  ...(entry.data.stack.length ? [{ label: '스택', value: entry.data.stack.join(' · ') }] : []),
+  ...(entry.data.started ? [{ label: '시작', value: entry.data.started }] : []),
+];
+---
+
+<AxisPage
+  title={entry.data.name}
+  eyebrow="Projects"
+  definition={entry.data.summary}
+  summary={entry.body}
+  posts={posts}
+  meta={meta}
+  tone="project"
+  emptyHint="이 프로젝트에 대한 글을 아직 쓰지 않았습니다."
+/>
+
+{
+  entry.data.repo || entry.data.demo ? (
+    <section class="measure -mt-2 flex flex-wrap gap-4 text-[0.875rem]">
+      {entry.data.repo && (
+        <a class="text-copper hover:underline" href={entry.data.repo} rel="noopener">
+          저장소
+        </a>
+      )}
+      {entry.data.demo && (
+        <a class="text-copper hover:underline" href={entry.data.demo} rel="noopener">
+          데모
+        </a>
+      )}
+    </section>
+  ) : null
+}

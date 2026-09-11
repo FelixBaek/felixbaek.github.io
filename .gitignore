@@ -1,0 +1,21 @@
+# build
+dist/
+.astro/
+node_modules/
+
+# wasm 산출물
+#  - Rust pkg/ 는 커밋한다(재현 가능한 빌드 산출물, CI에서 재생성도 가능)
+#  - Rust target/ 은 제외
+src/wasm/**/target/
+*.wasm.map
+
+# env / editor
+.env
+.env.*
+.DS_Store
+.vscode/
+.idea/
+
+# 로그
+*.log
+npm-debug.log*

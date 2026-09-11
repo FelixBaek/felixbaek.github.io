@@ -1,0 +1,21 @@
+---
+name: "Go"
+status: "active"
+order: 10
+since: "2026-08"
+summary: "표준 라이브러리와 런타임 동작을 예제로 확인하는 중입니다. 슬라이스·문자열·동시성 순서로 파고듭니다."
+repo: "https://github.com/FelixBaek"
+---
+
+Go는 언어 명세가 짧아서, 모르는 건 대부분 **런타임과 메모리 모델**에 있습니다.
+
+## 이 언어에서 파는 것
+
+1. 슬라이스와 배열의 경계 (len/cap, 재할당 시점)
+2. 문자열의 바이트 vs 룬, UTF-8 경계 처리
+3. goroutine 과 채널의 종료 조건
+4. 표준 라이브러리(`net/http`, `encoding/json`)의 기본 동작
+
+## 기록 방식
+
+관찰한 것은 [실험기록](/harness/experiment/), 헷갈린 개념은 [개념정리](/harness/concept/)로 남깁니다. Go 런타임을 브라우저에서 보고 싶을 때는 TinyGo로 Wasm을 만들어 글 안에서 직접 돌립니다.

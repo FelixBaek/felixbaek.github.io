@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Anvil 디자인 토큰 (Tailwind v4 CSS-first)
+   @theme 에 선언한 값이 그대로 유틸리티가 된다: bg-surface, text-fg-muted ...
+   다크 모드는 [data-theme="dark"] 에서 변수만 재정의한다.
+   ------------------------------------------------------------------ */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* 표면 */
+  --color-bg: #f6f6f4;
+  --color-surface: #ffffff;
+  --color-surface-2: #f4f4f1;
+  --color-surface-3: #ececea;
+  --color-line: #e3e3de;
+  --color-line-strong: #cfcfc8;
+
+  /* 글자 */
+  --color-fg: #1a1c1e;
+  --color-fg-muted: #5d6266;
+  --color-fg-caption: #666b6f;
+
+  /* 강조 */
+  --color-copper: #a2571f;
+  --color-copper-ink: #7e4418;
+  --color-copper-soft: #f6ede4;
+  --color-petrol: #2e5f63;
+  --color-petrol-soft: #e8eff0;
+  --color-amber: #7b5c14;
+  --color-amber-soft: #f6efdd;
+  --color-danger: #a3362c;
+  --color-danger-soft: #f8e9e6;
+
+  /* 코드 전용 */
+  --color-code-bg: #f3f4f1;
+  --color-code-line: #e2e3de;
+  --color-code-head: #ececea;
+  --color-hl: rgba(162, 87, 31, 0.13);
+
+  /* 타이포 */
+  --font-sans: "Pretendard Variable", Pretendard, Inter, -apple-system,
+    BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic",
+    system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas,
+    "D2Coding", monospace;
+
+  /* 레이아웃 */
+  --shell-max: 1400px;
+  --measure: 68ch;
+  --sidebar-w: 17.5rem; /* 280px */
+  --toc-w: 14rem; /* 224px */
+  --gutter: 3rem; /* 48px */
+}
+
+/* ---------------- 다크: Forge Night ---------------- */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #0f1113;
+  --color-surface: #15181b;
+  --color-surface-2: #1b1f22;
+  --color-surface-3: #22272b;
+  --color-line: #262b2f;
+  --color-line-strong: #333a3f;
+
+  --color-fg: #e7e9e8;
+  --color-fg-muted: #a3a9ae;
+  --color-fg-caption: #858c91;
+
+  --color-copper: #d69a65;
+  --color-copper-ink: #e7b489;
+  --color-copper-soft: #2a2018;
+  --color-petrol: #79b7bc;
+  --color-petrol-soft: #172426;
+  --color-amber: #d9b36a;
+  --color-amber-soft: #26221a;
+  --color-danger: #e08a7e;
+  --color-danger-soft: #2a1c1a;
+
+  --color-code-bg: #15181b;
+  --color-code-line: #262b2f;
+  --color-code-head: #1b1f22;
+  --color-hl: rgba(214, 154, 101, 0.16);
+}
+
+/* ---------------- 기본 요소 ---------------- */
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem; /* 17px */
+    line-height: 1.75;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-copper);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-copper);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* 숫자는 폭 고정 */
+  time,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* 공통 유틸리티 */
+@layer components {
+  .skip-link {
+    position: fixed;
+    top: -100px;
+    left: 1rem;
+    z-index: 60;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line-strong);
+    border-radius: 8px;
+  }
+  .skip-link:focus { top: 1rem; }
+
+  .meta-dot {
+    color: var(--color-line-strong);
+    margin-inline: 0.45em;
+  }
+
+  /* 태그: pill 금지, 각진 칩 */
+  .chip {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--color-fg-muted);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-line);
+    border-radius: 6px;
+    transition: color 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+  }
+  .chip:hover {
+    color: var(--color-copper);
+    background: var(--color-copper-soft);
+    border-color: color-mix(in srgb, var(--color-copper) 32%, var(--color-line));
+  }
+  .chip--lang { border-left: 2px solid var(--color-copper); }
+  .chip--harness { border-left: 2px solid var(--color-petrol); }
+  .chip--project { border-left: 2px solid var(--color-fg-caption); }
+
+  /* 축 표시 점 */
+  .axis-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    flex: none;
+  }
+  .axis-dot--lang { background: var(--color-copper); }
+  .axis-dot--harness { background: var(--color-petrol); }
+  .axis-dot--project { background: var(--color-fg-caption); }
+}

@@ -1,0 +1,87 @@
+---
+title: "Go 문자열은 왜 len() 과 룬 수가 다른가"
+description: "len(s) 는 바이트, utf8.RuneCountInString 은 문자 수. TinyGo로 만든 Wasm 모듈로 직접 세어 봅니다."
+date: 2026-09-11T01:20:00+09:00
+lastmod: 2026-09-11T02:20:00+09:00
+languages: ["go"]
+harness: ["experiment"]
+projects: []
+tags: ["string", "utf8", "rune"]
+review: true
+reviewAfter: 2026-10-01T00:00:00+09:00
+wasm: ["rune_counter"]
+order: 2
+---
+
+한글 문자열에서 `len(s)` 와 `for range` 로 센 문자가 달라서 당황한 적이 있습니다. 이유는 간단합니다 — Go의 문자열은 **바이트 슬라이스**입니다.
+
+## 왜 다른가
+
+| 표현 | 세는 것 | "한글" 에서 |
+| --- | --- | --- |
+| `len(s)` | 바이트 수 | 6 |
+| `utf8.RuneCountInString(s)` | 룬(문자) 수 | 2 |
+| `len([]rune(s))` | 룬 수 (슬라이스 생성) | 2 |
+
+UTF-8 에서 한글 음절은 보통 3바이트입니다. 그래서 문자열을 "글자 수" 로 자르려면 바이트 인덱스가 아니라 룬 단위로 다뤄야 합니다.
+
+```go title="count.go" hl={9,10} numbers
+package main
+
+import (
+	"fmt"
+	"unicode/utf8"
+)
+
+func main() {
+	s := "Go 언어"
+	fmt.Println(len(s))                     // 9   (바이트)
+	fmt.Println(utf8.RuneCountInString(s))  // 5   (룬)
+}
+```
+
+## 직접 세어 보기
+
+아래 실험은 **TinyGo(Go) 로 컴파일한 Wasm 모듈**입니다. `syscall/js` 로 노출한 함수를 브라우저에서 그대로 호출합니다. 입력을 바꾸면 바이트 수와 룬 수가 실시간으로 갱신됩니다.
+
+import RuneLab from '@components/wasm/RuneLab.tsx';
+import WasmLabFrame from '@components/wasm/WasmLabFrame.astro';
+
+<WasmLabFrame
+  module="rune_counter.wasm"
+  compiler="go"
+  size="179.4KB · gz 79.9KB"
+  minHeight="16rem"
+  label="Go 문자열 바이트/룬 카운터 (TinyGo Wasm)"
+  fallbackTitle="정적 대체물"
+>
+  <RuneLab client:visible />
+  <div slot="fallback">
+    <pre><code>{`len("Go 언어") = 9 bytes
+utf8.RuneCountInString("Go 언어") = 5 runes`}</code></pre>
+  </div>
+</WasmLabFrame>
+
+## 실험 기록
+
+Wasm 경계를 넘을 때는 **문자열이 아니라 인덱스와 길이**를 넘기는 게 정석입니다. 이 실험에서는 문자열 인자를 그대로 넘기도록 `syscall/js` 에 맡겼습니다 — 편하지만, 호출마다 UTF-8 변환 비용이 붙습니다.
+
+```go title="main.go" hl={3,4} numbers
+js.Global().Set("__anvilRuneCount", js.FuncOf(func(this js.Value, args []js.Value) any {
+	text := args[0].String()
+	return fmt.Sprintf(`{"bytes":%d,"runes":%d}`, len(text), utf8.RuneCountInString(text))
+}))
+```
+
+관찰한 것:
+
+- 반환값을 `map[string]any` 로 주면 변환 과정이 불안정했습니다. **JSON 문자열**로 돌려주고 JS에서 파싱하는 쪽이 안전했습니다.
+- `main()` 은 `select {}` 로 살려 둡니다. 함수를 전역에 등록한 뒤 런타임이 끝나면 JS 호출이 실패합니다.
+- wasm_exec.js 는 TinyGo 배포본에서 그대로 복사해야 합니다(버전이 다르면 초기화가 깨집니다).
+
+> 바이트를 세는 함수와 룬을 세는 함수를 나란히 두면, `len()` 이 왜 위험한지 몸으로 이해됩니다. 슬라이싱도 `[]rune(s)[:n]` 로 해야 안전합니다.
+
+## 다시 볼 것
+
+- `range` 로 문자열을 돌 때의 인덱스 의미(바이트 오프셋)
+- `utf8.ValidString` 로 잘린 문자열 검사하기

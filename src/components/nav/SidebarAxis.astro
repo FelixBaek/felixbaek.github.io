@@ -1,0 +1,25 @@
+---
+/**
+ * 사이드바 블록 공통 껍데기: 라벨 + 힌트 + (개수)
+ * 모든 축 블록이 같은 문법을 쓰도록 강제한다.
+ */
+interface Props {
+  label: string;
+  hint?: string;
+  tone?: 'lang' | 'harness' | 'project';
+}
+
+const { label, hint, tone = 'project' } = Astro.props;
+---
+
+<section class="flex flex-col gap-2">
+  <h2 class="flex flex-col gap-0.5 border-b border-line pb-1.5">
+    <span class="flex items-center gap-2">
+      <span class={`axis-dot axis-dot--${tone}`}></span>
+      <span class="text-[0.6875rem] font-bold tracking-[0.1em] text-fg-caption uppercase">{label}</span>
+      <slot name="count" />
+    </span>
+    {hint && <span class="pl-3.5 text-[0.6875rem] text-fg-caption">{hint}</span>}
+  </h2>
+  <slot />
+</section>

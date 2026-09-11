@@ -1,0 +1,209 @@
+/* ------------------------------------------------------------------
+   3단 레이아웃 골격
+   데스크톱(xl↑): 좌 패널 | 본문 | 우 TOC
+   lg: 좌 패널 | 본문 (TOC는 본문 상단 접이식)
+   <lg: 단일 컬럼 (좌 패널은 드로어)
+   ------------------------------------------------------------------ */
+
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  width: 100%;
+  max-width: var(--shell-max);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.col-main {
+  min-width: 0;
+  padding-block: 2rem 4rem;
+}
+
+.col-side {
+  display: none;
+}
+
+.col-aside {
+  display: none;
+}
+
+/* 본문은 항상 읽기 중심: 측정 폭 제한 */
+.measure {
+  max-width: var(--measure);
+}
+
+@media (min-width: 640px) {
+  .shell { padding-inline: 1.75rem; }
+}
+
+/* lg: 좌 패널 등장 */
+@media (min-width: 1024px) {
+  .shell {
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    gap: var(--gutter);
+    padding-inline: 2rem;
+  }
+
+  .col-side {
+    display: block;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-block: 2.25rem 3rem;
+    border-right: 1px solid var(--color-line);
+    scrollbar-width: thin;
+  }
+
+  .col-side::-webkit-scrollbar { width: 8px; }
+  .col-side::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong);
+    border-radius: 999px;
+  }
+
+  .col-main { padding-block: 3rem 5rem; }
+}
+
+/* xl: 우측 TOC 등장 */
+@media (min-width: 1280px) {
+  .shell {
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--toc-w);
+  }
+
+  .col-aside {
+    display: block;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-block: 3rem 3rem;
+    scrollbar-width: thin;
+  }
+
+  .col-aside::-webkit-scrollbar { width: 8px; }
+  .col-aside::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong);
+    border-radius: 999px;
+  }
+}
+
+/* 본문 카드 */
+.article-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-fg) 5%, transparent),
+    0 18px 40px -34px color-mix(in srgb, var(--color-fg) 45%, transparent);
+  padding: 2.5rem 2.75rem 2.25rem;
+}
+
+@media (max-width: 767px) {
+  .article-card {
+    padding: 1.5rem 1.25rem 1.5rem;
+    border-radius: 12px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .article-card { padding: 2.25rem 2.25rem 2rem; }
+}
+
+/* 모바일 상단 바 */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 3.5rem;
+  padding-inline: 1.25rem;
+  background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-line);
+}
+
+@media (min-width: 1024px) {
+  .topbar { display: none; }
+}
+
+/* 드로어 (좁은 화면 좌측 패널) */
+.drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 50;
+  width: min(84vw, 20rem);
+  padding: 1.5rem 1.25rem 2rem;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-line-strong);
+  box-shadow: 0 10px 40px -20px color-mix(in srgb, var(--color-fg) 60%, transparent);
+  overflow-y: auto;
+  transform: translateX(-102%);
+  transition: transform 0.22s ease;
+  visibility: hidden;
+}
+
+.drawer[data-open="true"] {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: color-mix(in srgb, #0f1113 45%, transparent);
+  backdrop-filter: blur(1px);
+}
+
+.scrim[hidden] { display: none; }
+
+body[data-drawer="open"] { overflow: hidden; }
+
+/* 사이드바 내부 그리드 (데스크톱에서는 sticky 컬럼 안에 그대로 흐른다) */
+.side-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* 하단 */
+.site-footer {
+  border-top: 1px solid var(--color-line);
+  background: var(--color-surface-2);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  max-width: var(--shell-max);
+  margin-inline: auto;
+  padding: 1.25rem 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--color-fg-muted);
+}
+
+@media (min-width: 640px) {
+  .site-footer__inner { padding-inline: 1.75rem; }
+}
+
+/* 인쇄: 3단 해제, 본문만 */
+@media print {
+  .col-side,
+  .col-aside,
+  .topbar,
+  .site-footer,
+  .wasm-lab { display: none !important; }
+  .shell { display: block; padding: 0; }
+  .article-card { border: 0; box-shadow: none; padding: 0; }
+  .prose { font-size: 11pt; line-height: 1.6; }
+}

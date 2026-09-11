@@ -1,0 +1,95 @@
+---
+/**
+ * 검색 — Pagefind (빌드 후 인덱싱).
+ * 한국어: Pagefind 1.5+ 는 Intl.Segmenter 로 CJK 질의를 분절한다.
+ *   · UI 번역: ko 지원
+ *   · stemming: ko 미지원 (대신 분절로 부분 일치 처리)
+ *   · 인덱스 언어는 pagefind.yml 의 force_language: ko 로 고정 → 색인 누락 방지
+ */
+import SiteShell from '@layouts/SiteShell.astro';
+---
+
+<SiteShell title="검색" description="제목·본문에서 키워드로 기록 찾기">
+  <div class="measure pt-2">
+    <h1 class="text-[1.75rem] leading-tight font-bold tracking-[-0.02em] text-fg">검색</h1>
+    <p class="mt-3 text-[0.9375rem] leading-relaxed text-fg-muted">
+      제목과 본문 전체에서 찾습니다. 한글은 형태소 분석 없이 분절 기반으로 색인됩니다.
+    </p>
+
+    <label for="pagefind-search-input" class="mt-6 block text-[0.8125rem] font-semibold text-fg-muted">검색어</label>
+    <div id="search" class="mt-2" data-pagefind-ignore></div>
+
+    <p
+      id="search-note"
+      class="mt-4 hidden rounded-lg border border-dashed border-line-strong px-4 py-3 text-[0.875rem] leading-relaxed text-fg-caption"
+    ></p>
+  </div>
+</SiteShell>
+
+<script>
+  /**
+   * Pagefind UI 는 빌드 산출물(/pagefind/*)에서 로드한다.
+   * dev 서버에는 아직 없으므로 실패를 조용히 안내한다.
+   */
+  const NOTE = document.getElementById('search-note') as HTMLParagraphElement | null;
+
+  const showNote = (message: string): void => {
+    if (!NOTE) return;
+    NOTE.textContent = message;
+    NOTE.classList.remove('hidden');
+  };
+
+  const loadScript = (src: string): Promise<void> =>
+    new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error(src));
+      document.head.appendChild(script);
+    });
+
+  const loadStyle = (href: string): void => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
+  };
+
+  const uiCss = '/pagefind/pagefind-ui.css';
+  const uiJs = '/pagefind/pagefind-ui.js';
+
+  (async () => {
+    loadStyle(uiCss);
+    try {
+      await loadScript(uiJs);
+    } catch {
+      showNote(
+        '아직 검색 인덱스가 없습니다. 로컬에서는 `npm run build && npm run preview` 로 확인하세요 (배포 시 자동 생성).',
+      );
+      return;
+    }
+
+    const PagefindUI = (window as unknown as { PagefindUI?: new (options: Record<string, unknown>) => void })
+      .PagefindUI;
+    if (!PagefindUI) {
+      showNote('Pagefind UI 를 초기화하지 못했습니다.');
+      return;
+    }
+
+    new PagefindUI({
+      element: '#search',
+      showSubResults: true,
+      showImages: false,
+      resetStyles: false,
+      translations: {
+        placeholder: '검색어를 입력하세요',
+        zero_results: '[SEARCH_TERM] 에 대한 결과가 없습니다',
+        many_results: '[COUNT] 개 결과',
+        one_result: '1 개 결과',
+        searching: '검색 중…',
+      },
+    });
+
+    document.querySelector<HTMLInputElement>('.pagefind-ui__search-input')?.setAttribute('id', 'pagefind-search-input');
+  })();
+</script>

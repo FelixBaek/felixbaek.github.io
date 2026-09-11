@@ -1,0 +1,59 @@
+---
+/**
+ * WasmLabFrame — 본문 안에서 Wasm 모듈이 실제로 도는 컨테이너
+ *
+ * CLS 방지 원칙:
+ *  - stage 에 min-height(--lab-min-h) 를 고정한다.
+ *  - 로딩 중에는 같은 높이를 차지하는 스켈레톤을 보여준다(아일랜드가 렌더).
+ *  - 결과/에러/실패 모두 같은 무대를 재사용하므로 레이아웃이 흔들리지 않는다.
+ *  - JS가 아예 없으면 <noscript> 정적 대체물로 같은 정보를 전달한다.
+ */
+interface Props {
+  /** 예: slice_capacity.wasm */
+  module: string;
+  /** wasm-pack(Rust) | tinygo(Go) */
+  compiler: 'rust' | 'go';
+  /** gzip 크기 표기 (예: "141KB") */
+  size: string;
+  /** 무대 최소 높이. 스켈레톤과 결과가 공유한다 */
+  minHeight?: string;
+  /** 스크린리더용 설명 */
+  label: string;
+  /** 정적 대체물 제목 */
+  fallbackTitle?: string;
+}
+
+const {
+  module,
+  compiler,
+  size,
+  minHeight = '15rem',
+  label,
+  fallbackTitle = '정적 대체물',
+} = Astro.props;
+
+const compilerLabel = compiler === 'rust' ? 'Rust · wasm-pack' : 'Go · TinyGo';
+---
+
+<figure class="wasm-lab" role="region" aria-label={label} data-wasm-lab>
+  <div class="wasm-lab__bar">
+    <span class="wasm-lab__label">LAB · wasm</span>
+    <span class="wasm-lab__module">{module}</span>
+    <span class="wasm-lab__badges">
+      <span class:list={['wasm-lab__badge', `wasm-lab__badge--${compiler}`]}>{compilerLabel}</span>
+      <span class="wasm-lab__badge">{size}</span>
+    </span>
+    <span class="wasm-lab__status" data-lab-status data-state="idle">대기</span>
+  </div>
+
+  <div class="wasm-lab__stage" style={`--lab-min-h: ${minHeight}`}>
+    <slot />
+  </div>
+
+  <noscript>
+    <div class="wasm-lab__fallback">
+      <p><strong>{fallbackTitle}</strong> — 이 영역은 Wasm 모듈을 브라우저에서 직접 실행합니다. JavaScript가 꺼져 있으면 동작하지 않으므로, 아래 코드로 같은 결과를 확인하세요.</p>
+      <slot name="fallback" />
+    </div>
+  </noscript>
+</figure>

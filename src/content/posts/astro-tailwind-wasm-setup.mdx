@@ -1,0 +1,86 @@
+---
+title: "Astro + Tailwind v4 + Wasm 조합에서 걸린 것들"
+description: "Tailwind v4의 CSS-first 토큰, vite-plugin-wasm 설정, 그리고 Wasm 아일랜드의 CLS까지 실제 구성에서 확인한 내용을 정리합니다."
+date: 2026-09-10T22:00:00+09:00
+lastmod: 2026-09-11T02:30:00+09:00
+languages: []
+harness: ["troubleshooting"]
+projects: []
+tags: ["Astro", "Tailwind", "Wasm", "빌드"]
+review: true
+wasm: []
+---
+
+Astro 7 + Tailwind v4 + WebAssembly 조합은 각각은 문서가 잘 되어 있는데, **셋을 같이 놓으면** 순서 문제가 생깁니다. 막힌 지점만 적어 둡니다.
+
+## 1. Tailwind v4 는 설정 파일이 아니라 CSS 다
+
+Tailwind v4 부터는 `tailwind.config.js` 대신 `@tailwindcss/vite` 플러그인 + CSS 안의 `@theme` 를 씁니다.
+
+```ts title="astro.config.mjs" hl={6} numbers
+export default defineConfig({
+  vite: {
+    plugins: [
+      tailwindcss(), // ← CSS 변환만 담당한다
+      wasm(),
+    ],
+  },
+});
+```
+
+`@tailwindcss/vite` 는 CSS 파이프라인을, `vite-plugin-wasm` 은 Wasm 모듈 로딩을 담당합니다. 이 사이트는 실제 설정과 같게 Tailwind 플러그인 다음에 Wasm 플러그인을 둡니다.
+
+## 2. Wasm과 빌드 타깃
+
+Wasm 플러그인이 생성하는 ESM을 그대로 빌드하기 위해 빌드 타깃을 `esnext`로 둡니다. 개발 서버의 사전 번들링 대상에서는 Wasm 패키지를 제외합니다.
+
+```ts title="astro.config.mjs" hl={3,7} numbers
+vite: {
+  build: { target: 'esnext' },   // TLA 를 네이티브로 유지
+  optimizeDeps: {
+    exclude: ['@wasm/slice_capacity', 'anvil/rune-counter'],
+  },
+},
+```
+
+정리하면:
+
+| 문제 | 증상 | 해결 |
+| --- | --- | --- |
+| 빌드 타깃 불일치 | `Top-level await is not available` | `build.target: 'esnext'` |
+| dev 서버가 wasm 을 변환 | 런타임에 `instantiate` 실패 | `optimizeDeps.exclude` |
+| 불필요한 TLA 플러그인 | Vite 설정 로딩 실패 | 별도 폴리필 없이 Vite 빌드 타깃 사용 |
+
+## 3. Wasm 아일랜드의 레이아웃 흔들림
+
+모듈을 네트워크로 받는 동안 영역이 0 높이면, 로드가 끝나는 순간 본문이 아래로 밀립니다. **스켈레톤과 결과가 같은 min-height를 공유**하게 해서 해결했습니다.
+
+```astro title="WasmLabFrame.astro" hl={3} numbers
+<div class="wasm-lab__stage" style={`--lab-min-h: ${minHeight}`}>
+  <slot />
+</div>
+```
+
+```css title="lab.css" hl={2,3} numbers
+.wasm-lab__stage { min-height: var(--lab-min-h, 15rem); contain: layout paint; }
+.lab-skeleton    { min-height: var(--lab-min-h, 15rem); }
+```
+
+`contain: layout paint` 을 함께 걸어 두면 내부 변화가 바깥 레이아웃에 전파되지 않습니다.
+
+> 하이드레이션은 `client:visible` 로 두었습니다. 본문 끝의 실험 영역까지 스크롤해야 모듈을 받으므로, 첫 화면 성능에는 Wasm 바이트가 전혀 들어가지 않습니다.
+
+## 4. 검색 인덱스가 비어 보일 때
+
+정적 검색(Pagefind)은 **빌드 후**에 돌아야 합니다. `astro build` 만 하고 끝내면 `/pagefind/` 가 없어서 검색 페이지가 조용히 비어 있습니다.
+
+```json title="package.json" hl={2} numbers
+"scripts": {
+  "build": "astro build && pagefind --site dist"
+}
+```
+
+## 다시 볼 것
+
+- `optimizeDeps.exclude` 에 넣어야 하는 패키지 판단 기준
+- Go(TinyGo) 쪽 wasm_exec.js 버전 불일치 시 나타나는 에러 메시지

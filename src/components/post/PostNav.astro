@@ -1,0 +1,48 @@
+---
+/**
+ * 이전/다음 글 + 보관함 링크
+ */
+import type { Post } from '@lib/site';
+
+interface Props {
+  prev?: Post;
+  next?: Post;
+}
+
+const { prev, next } = Astro.props;
+---
+
+<footer class="mt-12 border-t border-line pt-6">
+  <nav class="grid gap-3 sm:grid-cols-2" aria-label="이전/다음 글">
+    {
+      prev ? (
+        <a
+          href={`/posts/${prev.id}/`}
+          class="flex flex-col gap-1 rounded-lg border border-line bg-surface-2 px-4 py-3 transition-colors hover:border-line-strong hover:bg-surface-3"
+        >
+          <span class="text-[0.6875rem] tracking-[0.1em] text-fg-caption uppercase">이전 글</span>
+          <span class="text-[0.875rem] leading-snug font-medium text-fg">{prev.data.title}</span>
+        </a>
+      ) : (
+        <span></span>
+      )
+    }
+    {
+      next ? (
+        <a
+          href={`/posts/${next.id}/`}
+          class="flex flex-col gap-1 rounded-lg border border-line bg-surface-2 px-4 py-3 text-right transition-colors hover:border-line-strong hover:bg-surface-3"
+        >
+          <span class="text-[0.6875rem] tracking-[0.1em] text-fg-caption uppercase">다음 글</span>
+          <span class="text-[0.875rem] leading-snug font-medium text-fg">{next.data.title}</span>
+        </a>
+      ) : (
+        <span></span>
+      )
+    }
+  </nav>
+
+  <p class="mt-5 text-center text-[0.875rem]">
+    <a href="/archives/" class="text-copper hover:underline">전체 기록 보기</a>
+  </p>
+</footer>

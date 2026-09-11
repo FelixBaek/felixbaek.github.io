@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import AxisPage from '@components/page/AxisPage.astro';
+import { formatRelative, getPostsByAxis } from '@lib/site';
+
+export async function getStaticPaths() {
+  const harnesses = await getCollection('harness');
+  return harnesses.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const posts = await getPostsByAxis('harness', entry.id);
+
+const latest = posts[0]?.data.lastmod ?? posts[0]?.data.date;
+const meta = [
+  { label: '기록', value: `${posts.length}개` },
+  ...(latest ? [{ label: '최근 갱신', value: formatRelative(latest) }] : []),
+];
+---
+
+<AxisPage
+  title={entry.data.name}
+  eyebrow="Harness"
+  definition={entry.data.definition}
+  summary={entry.body ?? entry.data.summary}
+  posts={posts}
+  meta={meta}
+  tone="harness"
+  emptyHint={`${entry.data.name} 기록이 아직 없습니다. 이 방식으로 정리한 글을 쓰면 여기에 쌓입니다.`}
+/>
