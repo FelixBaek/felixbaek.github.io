@@ -1,15 +1,13 @@
 ---
 /**
  * 좌측 기록 패널
- * Identity → Languages → 최근 기록
+ * Identity → Languages
  */
 import { getCollection } from 'astro:content';
-import { SITE, getLanguageCounts, getRecentPosts } from '@lib/site';
-import SidebarAxis from './SidebarAxis.astro';
+import { SITE, getLanguageCounts } from '@lib/site';
 
 const languages = await getCollection('languages');
 const languageCounts = await getLanguageCounts();
-const recentPosts = await getRecentPosts(4);
 const sortedLanguages = languages.sort((a, b) => a.data.order - b.data.order);
 
 const count = (name: string): number => languageCounts[name] ?? 0;
@@ -54,20 +52,16 @@ const count = (name: string): number => languageCounts[name] ?? 0;
       <span class="text-[0.6875rem] font-bold tracking-[0.1em] text-fg-caption uppercase">Languages</span>
       <span class="sidebar-folder__chevron ml-auto text-fg-caption" aria-hidden="true">›</span>
     </summary>
-    <p class="mt-1 pl-3.5 text-[0.6875rem] text-fg-caption">언어별 학습 아카이브</p>
-    <ul class="mt-2 flex flex-col gap-0.5">
+    <ul class="sidebar-tree mt-2 flex flex-col gap-0.5">
       {sortedLanguages.map((entry) => {
         const c = count(entry.id);
         return (
           <li>
             <a
               href={`/languages/${entry.id}/`}
-              class="group flex items-baseline justify-between gap-2 rounded-md px-2 py-1.5 text-[0.875rem] text-fg hover:bg-surface-2 hover:text-copper"
+              class="sidebar-tree__item group flex items-baseline justify-between gap-2 rounded-r-md py-1.5 pr-2 pl-3 text-[0.875rem] text-fg hover:bg-surface-2 hover:text-copper"
             >
-              <span class="flex min-w-0 items-center gap-2">
-                <span class="axis-dot axis-dot--lang"></span>
-                <span class="truncate">{entry.data.name}</span>
-              </span>
+              <span class="min-w-0 truncate">{entry.data.name}</span>
               <span class="flex-none text-[0.6875rem] tabular-nums text-fg-caption">{c}</span>
             </a>
           </li>
@@ -75,28 +69,4 @@ const count = (name: string): number => languageCounts[name] ?? 0;
       })}
     </ul>
   </details>
-
-  <!-- 최근 기록 -->
-  <SidebarAxis label="최근 기록">
-    <ul class="flex flex-col gap-1">
-      {
-        recentPosts.map((post) => (
-          <li>
-            <a
-              href={`/posts/${post.id}/`}
-              class="flex items-baseline justify-between gap-2 rounded-md px-2 py-1 text-[0.8125rem] leading-snug text-fg-muted hover:bg-surface-2 hover:text-copper"
-            >
-              <span class="min-w-0 truncate">{post.data.title}</span>
-              <time
-                class="flex-none text-[0.625rem] tabular-nums text-fg-caption"
-                datetime={post.data.date.toISOString()}
-              >
-                {post.data.date.toISOString().slice(5, 10).replace('-', '.')}
-              </time>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </SidebarAxis>
 </div>

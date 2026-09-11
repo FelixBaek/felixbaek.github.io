@@ -38,17 +38,17 @@ Wasm 도구가 없으면 `wasm:*` 는 건너뛰어도 됩니다 — 산출물이
 
 ```yaml
 ---
-title: "Go 슬라이스: len, cap"
+title: "새 글 제목"
 description: "목록·검색·OG에 쓰이는 한 줄 요약"
 date: 2026-09-10T23:10:00+09:00
-languages: ["go"]        # 좌측 Languages 축 (id)
-tags: ["slice", "배열"]
+languages: []              # 언어 카테고리 id
+tags: []
 draft: true              # 작성 중이면 비공개
-wasm: ["slice_capacity"] # 임베드한 Wasm 모듈 이름
+wasm: []                 # 임베드한 Wasm 모듈 이름
 ---
 ```
 
-언어 id는 `src/content/languages/*.md`의 파일명과 맞춥니다. 글이 없는 언어도
+언어 카테고리는 필요할 때 `src/content/languages/<id>.md`로 추가합니다. 글이 없는 언어도
 사이드바에 표시되며, 언어 페이지에는 `아직 공부 중이에요.`라고 안내합니다.
 
 ### 코드 블록 메타
@@ -86,7 +86,7 @@ import WasmLabFrame from '@components/wasm/WasmLabFrame.astro';
 ```
 src/
 ├─ components/
-│  ├─ nav/    Sidebar, SidebarAxis         좌측 기록 패널
+│  ├─ nav/    Sidebar                      좌측 기록 패널
 │  ├─ toc/    Toc, ReadingRail            우측 목차 / 모바일 진행선
 │  ├─ post/   PostCard, PostMeta, PostNav, TagChip
 │  ├─ page/   AxisPage                     언어 아카이브 공용 레이아웃
@@ -98,7 +98,7 @@ src/
 ├─ styles/    tokens.css, layout.css, prose.css, code.css, lab.css, shiki-*.json
 ├─ content/   posts(MDX) · languages
 ├─ pages/     index, posts/[...slug], languages/[slug], tags/[slug], archives,
-│             search, about, 404, rss.xml
+│             search, 404, rss.xml
 └─ wasm/      slice_capacity(Rust) · rune-counter(Go)
 ```
 

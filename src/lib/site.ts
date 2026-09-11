@@ -20,10 +20,6 @@ export async function getAllPosts(): Promise<Post[]> {
   return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
 
-export async function getRecentPosts(count = 4): Promise<Post[]> {
-  return (await getAllPosts()).slice(0, count);
-}
-
 /** 언어별 글 개수 — 좌측 패널 카운트 */
 export async function getLanguageCounts(): Promise<Record<string, number>> {
   const posts = await getAllPosts();

@@ -5,7 +5,7 @@ import { z } from 'astro/zod';
 /**
  * 콘텐츠 스키마
  *  posts     : MDX 글 (Wasm 컴포넌트 임베드 가능)
- *  languages : 언어 아카이브 메타 (Go, Rust, …)
+ *  languages : 언어 카테고리 메타
  */
 
 const posts = defineCollection({

@@ -89,6 +89,7 @@
 @layer base {
   html {
     color-scheme: light;
+    overflow-x: clip;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
@@ -101,6 +102,7 @@
     font-size: 1.0625rem; /* 17px */
     line-height: 1.75;
     word-break: keep-all;
+    overflow-x: clip;
     overflow-wrap: break-word;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -188,4 +190,18 @@
   .sidebar-folder > summary::-webkit-details-marker { display: none; }
   .sidebar-folder__chevron { transition: transform 0.14s ease; }
   .sidebar-folder[open] .sidebar-folder__chevron { transform: rotate(90deg); }
+
+  .sidebar-tree {
+    margin-left: 3px;
+    border-left: 1px solid var(--color-copper);
+  }
+  .sidebar-tree__item { position: relative; }
+  .sidebar-tree__item::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 0.55rem;
+    border-top: 1px solid var(--color-copper);
+    content: '';
+  }
 }

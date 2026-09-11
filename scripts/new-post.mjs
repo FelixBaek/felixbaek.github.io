@@ -2,7 +2,7 @@
 /**
  * 새 글 생성기
  *   npm run new:post "글 제목"
- *   npm run new:post "글 제목" -- --lang go --tags slice,배열
+ *   npm run new:post "글 제목" -- --lang language-id --tags 주제
  *
  * 파일명은 제목을 슬러그로 바꿔 src/content/posts/<slug>.mdx 로 만든다.
  */
@@ -21,7 +21,7 @@ function option(name, fallback = '') {
 }
 
 if (!title) {
-  console.error('제목이 필요합니다. 예) npm run new:post "Go 슬라이스 정리"');
+  console.error('제목이 필요합니다. 예) npm run new:post "새 글 제목"');
   process.exit(1);
 }
 
@@ -48,7 +48,7 @@ title: ${JSON.stringify(title)}
 description: ""            # 목록·검색·OG에 쓰이는 한 줄 요약 (필수)
 date: ${iso}
 lastmod: ${iso}
-languages: ${JSON.stringify(langs)}      # 예: ["go"]
+languages: ${JSON.stringify(langs)}
 tags: ${JSON.stringify(tags)}
 wasm: []                   # 임베드한 Wasm 모듈 이름
 ---
