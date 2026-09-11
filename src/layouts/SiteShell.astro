@@ -126,7 +126,7 @@ const hasToc = headings.filter((h) => h.depth === 2 || h.depth === 3).length >= 
         <p class="flex flex-wrap items-center gap-1">
           <span>&copy; {new Date().getFullYear()} {SITE.author}</span>
           <span class="meta-dot" aria-hidden="true">·</span>
-          <span>Astro + Tailwind CSS</span>
+          <span>Astro + Tailwind v4 + Wasm</span>
           <span class="meta-dot" aria-hidden="true">·</span>
           <a class="hover:text-copper" href="/rss.xml">RSS</a>
         </p>
@@ -166,4 +166,5 @@ const hasToc = headings.filter((h) => h.depth === 2 || h.depth === 3).length >= 
   @import '@styles/prose.css';
   @import '@styles/table.css';
   @import '@styles/code.css';
+  @import '@styles/lab.css';
 </style>

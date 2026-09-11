@@ -4,7 +4,7 @@ import { z } from 'astro/zod';
 
 /**
  * 콘텐츠 스키마
- *  posts     : MDX 글
+ *  posts     : MDX 글 (Wasm 컴포넌트 임베드 가능)
  *  languages : 언어 카테고리 메타
  */
 
@@ -20,6 +20,9 @@ const posts = defineCollection({
     /** 기록 축 */
     languages: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
+
+    /** 이 글에 임베드된 Wasm 모듈 (사이드바/배지·검증에 사용) */
+    wasm: z.array(z.string()).default([]),
 
     /** SEO/OG */
     cover: z.string().optional(),

@@ -1,6 +1,6 @@
 ---
 /**
- * 글 메타: 날짜 · 읽는 시간 · 수정일
+ * 글 메타: 날짜 · 읽는 시간 · 수정일 · (Wasm 모듈 배지)
  */
 import { formatDate, readingTime, type Post } from '@lib/site';
 
@@ -28,6 +28,17 @@ const updated = data.lastmod && data.lastmod.valueOf() > data.date.valueOf() ? d
         <span class="meta-dot" aria-hidden="true">·</span>
         <span class="text-fg-caption" itemprop="dateModified">
           수정 {formatDate(updated, 'short')}
+        </span>
+      </>
+    )
+  }
+
+  {
+    data.wasm.length > 0 && (
+      <>
+        <span class="meta-dot" aria-hidden="true">·</span>
+        <span class="rounded px-1.5 py-0.5 text-[0.6875rem] font-semibold" style="color: var(--color-petrol); background: var(--color-petrol-soft);">
+          Wasm {data.wasm.length}
         </span>
       </>
     )

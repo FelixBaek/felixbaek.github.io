@@ -1,8 +1,10 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "exclude": ["dist", "src/wasm/**/bin", "src/wasm/**/pkg", "src/wasm/**/target"],
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "strictNullChecks": true,
     "allowJs": true,
     "baseUrl": ".",
@@ -10,7 +12,8 @@
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
-      "@lib/*": ["src/lib/*"]
+      "@lib/*": ["src/lib/*"],
+      "@wasm/*": ["src/wasm/*"]
     }
   }
 }

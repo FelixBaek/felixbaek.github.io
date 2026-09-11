@@ -50,6 +50,7 @@ date: ${iso}
 lastmod: ${iso}
 languages: ${JSON.stringify(langs)}
 tags: ${JSON.stringify(tags)}
+wasm: []                   # 임베드한 Wasm 모듈 이름
 ---
 
 ## 왜

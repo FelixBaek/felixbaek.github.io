@@ -18,3 +18,4 @@ exclude_selectors:
   - ".scrim"
   - ".toc-inline"
   - ".article-nav"
+  - ".wasm-lab__bar"
